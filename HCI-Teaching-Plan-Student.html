@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HCI Fundamentals — Student Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #F8F7F3;
+  --surface: #FFFFFF;
+  --text: #1C1C1A;
+  --muted: #6A6A65;
+  --border: #E4E3DE;
+  --accent: #C4451A;
+  --accent-light: #FDF0EB;
+  --session-color: #1B7A6E;
+  --session-light: #E8F5F2;
+  --session-border: #B0DAD5;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.65; }
+a { color: var(--session-color); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── TOPBAR ── */
+#topbar {
+  background: #1C1C1A;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+#topbar-inner {
+  max-width: 960px; margin: 0 auto;
+  padding: 14px 20px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+#topbar-left {}
+#topbar-label { font-size: 10px; letter-spacing: 3px; color: #888; text-transform: uppercase; font-family: monospace; margin-bottom: 4px; }
+#topbar-title { font-family: 'Lora', serif; font-size: 17px; color: #F5F4F0; font-weight: 400; }
+#topbar-title strong { color: #F5F4F0; font-weight: 600; }
+#topbar-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.ctrl-group { display: flex; border-radius: 7px; overflow: hidden; border: 1px solid #383836; }
+.ctrl-btn {
+  padding: 6px 14px; font-size: 11px; font-family: monospace;
+  letter-spacing: 1px; text-transform: uppercase;
+  background: transparent; color: #888; border: none; cursor: pointer;
+  transition: all 0.15s;
+}
+.ctrl-btn.active { background: var(--session-color); color: #fff; }
+.ctrl-btn:hover:not(.active) { background: #2A2A28; color: #CCC; }
+
+/* ── LAYOUT ── */
+#shell { max-width: 960px; margin: 0 auto; padding: 0 20px 60px; }
+
+/* ── SESSION TABS ── */
+#session-tabs {
+  display: flex; gap: 4px; padding: 20px 0 0;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 28px;
+}
+#session-tabs::-webkit-scrollbar { display: none; }
+.s-tab {
+  padding: 9px 16px; border: none; background: transparent;
+  font-family: 'Source Sans 3', sans-serif; font-size: 12px;
+  font-weight: 600; letter-spacing: 0.5px;
+  color: var(--muted); cursor: pointer; white-space: nowrap;
+  border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: all 0.15s; border-radius: 6px 6px 0 0;
+}
+.s-tab:hover:not(.active) { background: var(--border); color: var(--text); }
+.s-tab.active { color: var(--session-color); border-bottom-color: var(--session-color); background: var(--session-light); }
+.s-tab.exam.active { color: #6B3FAF; border-bottom-color: #6B3FAF; background: #F3EEFF; }
+
+/* ── SESSION HEADER ── */
+#session-header {
+  border-radius: var(--radius); padding: 24px 28px;
+  background: var(--session-light); border: 1px solid var(--session-border);
+  margin-bottom: 24px; display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
+}
+#s-meta { font-size: 11px; font-family: monospace; letter-spacing: 2px; text-transform: uppercase; color: var(--session-color); margin-bottom: 6px; }
+#s-title { font-family: 'Lora', serif; font-size: 22px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+#s-subtitle { font-family: 'Lora', serif; font-size: 14px; font-style: italic; color: var(--muted); margin-bottom: 14px; }
+#s-date { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+#s-date::before { content: "📅"; font-size: 11px; }
+#s-icon { font-size: 52px; opacity: 0.2; color: var(--session-color); font-family: monospace; line-height: 1; }
+
+/* ── SECTION LABELS ── */
+.section-label {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  font-family: monospace; color: var(--muted); margin-bottom: 10px; margin-top: 24px;
+}
+
+/* ── INSTRUCTOR: PREP CARD ── */
+.prep-card {
+  background: #FFFBF0; border: 1px solid #F0E0B0; border-left: 4px solid #D4A020;
+  border-radius: var(--radius); padding: 16px 20px; margin-bottom: 16px;
+}
+.prep-card-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: monospace; color: #B07820; margin-bottom: 6px; }
+.prep-card p { font-size: 14px; color: #444; line-height: 1.7; }
+
+/* ── INSTRUCTOR: TIMING BLOCKS ── */
+.block-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); transition: box-shadow 0.2s;
+}
+.block.open { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 0 0 2px var(--session-border); }
+.block-head {
+  padding: 14px 18px; cursor: pointer;
+  display: grid; grid-template-columns: 70px 90px 1fr auto;
+  align-items: center; gap: 12px;
+}
+.block-time { font-family: monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+.block-badge {
+  font-size: 10px; font-family: monospace; padding: 3px 8px;
+  border-radius: 4px; white-space: nowrap; text-align: center;
+}
+.badge-warmup   { background: #FFF3E0; color: #E65100; border: 1px solid #FFCC80; }
+.badge-core     { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; }
+.badge-activity { background: #F3E5F5; color: #6A1B9A; border: 1px solid #CE93D8; }
+.badge-closing  { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+.badge-social   { background: #FCE4EC; color: #880E4F; border: 1px solid #F48FB1; }
+.badge-exam     { background: #EDE7F6; color: #4527A0; border: 1px solid #B39DDB; }
+.block-title-wrap {}
+.block-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.block-tag { font-size: 11px; color: var(--session-color); font-family: monospace; margin-top: 1px; }
+.block-chev { color: #CCC; font-size: 18px; transition: transform 0.2s; user-select: none; }
+.block-chev.open { transform: rotate(90deg); }
+.block-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--border); }
+.block-body.open { display: block; }
+.block-body p { font-size: 14px; line-height: 1.75; color: #333; margin-top: 14px; margin-bottom: 0; }
+.why-box {
+  margin-top: 12px; padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  background: var(--session-light); border-left: 3px solid var(--session-color);
+  font-size: 12px; color: #555; font-style: italic; line-height: 1.6;
+}
+.why-box strong { font-style: normal; color: var(--session-color); }
+.prompts-box { margin-top: 10px; }
+.prompts-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: monospace; color: var(--muted); margin-bottom: 6px; }
+.prompt-item {
+  font-size: 13px; color: #444; padding: 6px 12px;
+  background: #F8F7F3; border-radius: 6px; margin-bottom: 4px;
+  border-left: 2px solid #DDD;
+}
+.prompt-item::before { content: "💬 "; }
+
+/* ── INSTRUCTOR: RUBRIC ── */
+.rubric-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-top: 8px;
+}
+.rubric-head {
+  padding: 12px 16px; background: var(--session-light);
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer;
+}
+.rubric-head-title { font-size: 13px; font-weight: 600; color: var(--session-color); }
+.rubric-body { display: none; padding: 14px 16px; }
+.rubric-body.open { display: block; }
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.rubric-table th { text-align: left; padding: 8px 10px; background: var(--bg); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: monospace; color: var(--muted); }
+.rubric-table td { padding: 8px 10px; border-top: 1px solid var(--border); vertical-align: top; }
+.rubric-table tr:hover td { background: var(--bg); }
+
+/* ── STUDENT: OVERVIEW ── */
+.student-overview {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px; margin-bottom: 16px;
+}
+.student-overview p { font-size: 15px; line-height: 1.75; color: #333; }
+
+/* ── STUDENT: WHAT WE DO ── */
+.what-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.what-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 16px; font-size: 14px;
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.what-item::before { content: "→"; color: var(--session-color); font-weight: 600; flex-shrink: 0; margin-top: 1px; }
+
+/* ── ASSIGNMENT CARD ── */
+.assignment-card {
+  border: 2px solid var(--session-border); border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+.assignment-card.open { border-color: var(--session-color); }
+.assignment-head {
+  padding: 14px 18px; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--session-light);
+}
+.assignment-label-wrap { display: flex; align-items: center; gap: 10px; }
+.assignment-badge {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  font-family: monospace; padding: 3px 8px; border-radius: 4px;
+  background: var(--session-color); color: white;
+}
+.assignment-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.assignment-body { display: none; padding: 16px 18px; background: var(--surface); }
+.assignment-body.open { display: block; }
+.assignment-desc { font-size: 14px; line-height: 1.75; color: #333; margin-bottom: 12px; }
+.assignment-due {
+  font-size: 12px; font-family: monospace; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.assignment-due::before { content: "⏱"; }
+
+/* ── REFERENCES ── */
+.refs-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; margin-bottom: 16px;
+}
+.refs-head {
+  padding: 12px 18px; background: var(--bg);
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; border-bottom: 1px solid var(--border);
+}
+.refs-head-title { font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-family: monospace; color: var(--muted); }
+.refs-body { display: none; padding: 14px 18px; }
+.refs-body.open { display: block; }
+.ref-section-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; font-family: monospace; color: var(--muted); margin-bottom: 8px; margin-top: 12px; }
+.ref-section-label:first-child { margin-top: 0; }
+.ref-item { font-size: 13px; line-height: 1.6; color: #333; padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: flex-start; }
+.ref-item:last-child { border-bottom: none; }
+.ref-item-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.ref-item-text {}
+.ref-chapter { font-family: monospace; font-size: 11px; color: var(--session-color); margin-top: 2px; }
+
+/* ── NAV ── */
+#session-nav { display: flex; justify-content: space-between; margin-top: 32px; gap: 10px; }
+.nav-btn {
+  padding: 10px 22px; border-radius: 8px; cursor: pointer;
+  font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 600;
+  transition: all 0.15s;
+}
+#btn-prev { border: 1px solid var(--border); background: var(--surface); color: var(--muted); }
+#btn-prev:hover:not(:disabled) { background: var(--border); }
+#btn-next { border: 1px solid var(--session-color); background: var(--session-color); color: white; }
+#btn-next:hover:not(:disabled) { opacity: 0.88; }
+.nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── SESSION 7 EXAM SPECIFICS ── */
+.exam-banner {
+  background: #F0EBFF; border: 1px solid #C9B8F0; border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 20px; text-align: center;
+}
+.exam-banner h3 { font-family: 'Lora', serif; font-size: 16px; color: #4A1A9A; margin-bottom: 4px; }
+.exam-banner p { font-size: 13px; color: #6B3FAF; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  #topbar-inner { padding: 12px 14px; }
+  #topbar-title { font-size: 14px; }
+  #shell { padding: 0 14px 48px; }
+  #session-header { grid-template-columns: 1fr; }
+  #s-icon { display: none; }
+  .block-head { grid-template-columns: 60px 80px 1fr auto; gap: 8px; }
+  #session-nav { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="topbar-inner">
+    <div id="topbar-left">
+      <div id="topbar-label">HCI Fundamentals · Student Guide · PROMED 2023 · Semester Genap 2025/2026</div>
+      <div id="topbar-title"><strong>Human–Computer Interaction</strong> <span id="topbar-view-label"></span></div>
+    </div>
+    <div id="topbar-controls">
+      <div class="ctrl-group">
+        <button class="ctrl-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="ctrl-btn" id="btn-id" onclick="setLang('id')">ID</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="shell">
+  <div id="session-tabs"></div>
+  <div id="session-header">
+    <div>
+      <div id="s-meta"></div>
+      <div id="s-title"></div>
+      <div id="s-subtitle"></div>
+      <div id="s-date"></div>
+    </div>
+    <div id="s-icon"></div>
+  </div>
+  <div id="session-content"></div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────────
+let LANG = 'en';
+let VIEW = 'student'; // fixed
+let CUR  = 0;
+let openBlocks = {};
+let openAssign = false;
+let openRubric = false;
+let openRefs   = false;
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const t = (obj) => typeof obj === 'string' ? obj : (obj[LANG] || obj.en);
+
+// ── SESSION DATA ──────────────────────────────────────────────────────────────
+const SESSIONS = [
+{
+  no: 1, icon: "◎",
+  date: { en: "April 7, 2026", id: "7 April 2026" },
+  color: "#1B7A6E", light: "#E6F5F2", border: "#A8D8D2",
+  title: { en: "Introduction to HCI & UX Principles", id: "Pengantar HCI & Prinsip UX" },
+  subtitle: { en: "Where it all begins.", id: "Di sinilah semuanya bermula." },
+  instructor: {
+    prep: {
+      en: "Before class: Prepare 5–6 screenshots of good and bad interfaces — local apps (Gojek, Tokopedia, MyBCA) work best because students immediately relate. Open your Miro/FigJam/Padlet template before the session and share the link in chat the moment class starts. Test your screen sharing. Have the apps you want to demo installed and ready.",
+      id: "Sebelum kelas: Siapkan 5–6 screenshot UI yang bagus dan yang buruk — aplikasi lokal (Gojek, Tokopedia, MyBCA) paling pas karena mahasiswa langsung relate. Buka template Miro/FigJam/Padlet sebelum sesi dan share link-nya di chat begitu kelas mulai. Test screen sharing dulu. Pastikan aplikasi yang mau di-demo sudah ter-install."
+    },
+    blocks: [
+      {
+        time: "0–15", badge: "social", tag: { en: "Opening Ritual", id: "Ritual Pembuka" },
+        title: { en: "Social Contract", id: "Kontrak Sosial" },
+        body: {
+          en: "Open with: 'Before we get into anything, let's set some ground rules together — not mine, ours.' Share the Miro/Padlet link. Students add sticky notes under three columns: Expectations (what they hope to gain), Commitments (what they'll bring to class), and Off-limits (what they want to avoid). Give 8–10 minutes to fill it out, then spend the last 5 minutes reading out and agreeing on key points together. Screenshot and save this — you'll bring it back in Session 7.\n\nFree tools for this: Miro (free tier), FigJam (free), Padlet (free), or Jamboard (Google, free).",
+          id: "Buka dengan: 'Sebelum kita mulai, kita tentuin dulu aturan mainnya bareng — bukan aturan gue, tapi aturan kita.' Share link Miro/Padlet. Mahasiswa nulis sticky notes di tiga kolom: Harapan (apa yang ingin mereka dapat), Komitmen (apa yang akan mereka bawa ke kelas), dan Pantangan (apa yang ingin dihindari). Kasih waktu 8–10 menit, lalu 5 menit terakhir baca bareng dan setujui poin-poin utamanya. Screenshot dan simpan — akan dibawa lagi di Sesi 7.\n\nAlternatif gratis: Miro (free tier), FigJam (gratis), Padlet (gratis), atau Jamboard (Google, gratis)."
+        },
+        why: {
+          en: "Students who co-create the classroom norms feel more invested and accountable. It also gives you instant insight into their expectations and anxieties before you've said a word about the syllabus.",
+          id: "Mahasiswa yang ikut membuat aturan kelas akan lebih merasa punya dan bertanggung jawab. Ini juga beri insight langsung tentang harapan dan kekhawatiran mereka sebelum kamu sempat bicara soal silabus."
+        },
+        prompts: []
+      },
+      {
+        time: "15–30", badge: "warmup", tag: { en: "Hook", id: "Kail Pembuka" },
+        title: { en: "Interface Analysis — Good vs. Bad", id: "Analisis Antarmuka — Bagus vs. Buruk" },
+        body: {
+          en: "Show 3 pairs of interfaces side by side: a well-designed app screen vs. a frustrating one. Pick examples from daily life — a clear checkout flow vs. a confusing government form, a simple onboarding vs. a cluttered dashboard. Ask: 'Which one would you rather use? Why?' Let them answer in chat or verbally. Don't explain yet — just collect their observations and plant the question: what makes one better than the other?",
+          id: "Tampilkan 3 pasang antarmuka berdampingan: layar aplikasi yang bagus vs. yang frustrasi. Pakai contoh dari kehidupan sehari-hari — alur checkout yang jelas vs. formulir pemerintah yang membingungkan, onboarding sederhana vs. dashboard yang berantakan. Tanya: 'Mana yang lebih enak dipakai? Kenapa?' Biarkan mereka jawab di chat atau langsung. Jangan jelaskan dulu — kumpulkan observasi mereka dan tanam pertanyaan: apa yang bikin satu lebih baik dari yang lain?"
+        },
+        why: {
+          en: "Priming students with a concrete, personal question before theory makes the theory feel like an answer — not a lecture. They'll remember the example, and through it, the concept.",
+          id: "Memulai dengan pertanyaan konkret dan personal sebelum teori bikin teorinya terasa seperti jawaban, bukan ceramah. Mereka akan ingat contohnya, dan lewat contoh itu, konsepnya."
+        },
+        prompts: {
+          en: ["Pernah frustrasi sama suatu aplikasi? Ceritain satu kejadian.", "Siapa yang salah kalau user gagal — user-nya atau desainer-nya?"],
+          id: ["Pernah frustrasi sama suatu aplikasi? Ceritain satu kejadian.", "Siapa yang salah kalau user gagal — user-nya atau desainer-nya?"]
+        }
+      },
+      {
+        time: "30–55", badge: "core", tag: { en: "Core Concept", id: "Konsep Inti" },
+        title: { en: "What is HCI, UX, and UI?", id: "Apa itu HCI, UX, dan UI?" },
+        body: {
+          en: "Cover: the definition of HCI (human + computer + interaction), and — importantly — how HCI, UX, and UI are related but not the same thing. Lots of students come in thinking UX and UI are the same. Use a simple diagram: HCI is the field, UX is the practice, UI is one output of that practice.\n\nThen: a quick timeline — CLI → GUI → Web → Mobile → Touch → Voice → AI. Keep it conversational, not a history exam. Ask them: 'Which era do you live in most?' (Trick answer: all of them.)",
+          id: "Bahas: definisi HCI (manusia + komputer + interaksi), dan yang penting — bagaimana HCI, UX, dan UI berkaitan tapi bukan hal yang sama. Banyak mahasiswa datang dengan pikiran UX dan UI itu sama. Pakai diagram sederhana: HCI adalah bidangnya, UX adalah praktiknya, UI adalah salah satu output dari praktik itu.\n\nLalu: timeline singkat — CLI → GUI → Web → Mobile → Touch → Voice → AI. Santai saja, ini bukan ujian sejarah. Tanya: 'Era mana yang paling sering kalian hidup di dalamnya?' (Jawaban trick: semua era.)"
+        },
+        why: {
+          en: "Establishing clear vocabulary early prevents confusion in every subsequent session. The HCI/UX/UI distinction is something students will thank you for clarifying from day one.",
+          id: "Membangun kosakata yang jelas di awal mencegah kebingungan di setiap sesi berikutnya. Mahasiswa akan berterima kasih atas klarifikasi HCI/UX/UI dari hari pertama ini."
+        },
+        prompts: {
+          en: ["Can you think of an interface that isn't on a screen? (Car dashboard, ATM, elevator buttons)", "What makes a voice interface different from a touch interface, in terms of how we use it?"],
+          id: ["Bisa kasih contoh antarmuka yang bukan di layar? (Dashboard mobil, ATM, tombol lift)", "Apa yang bikin antarmuka suara berbeda dari antarmuka sentuh, dari sisi cara kita pakainya?"]
+        }
+      },
+      {
+        time: "55–75", badge: "activity", tag: { en: "Activity", id: "Aktivitas" },
+        title: { en: "Comparative Case Study", id: "Studi Kasus Komparatif" },
+        body: {
+          en: "Students pick one pair of competing products: ride-hailing (Gojek vs. Grab vs. Uber) or e-commerce (Tokopedia vs. Shopee vs. Amazon). Give them 8–10 minutes to open both apps and note 2–3 differences they observe in how the interfaces feel or work. Share findings in chat or verbally. Your job: synthesize their observations using HCI vocabulary. 'What you're noticing about the checkout button placement — that's actually about visibility and affordance.' Let the vocabulary emerge from their observations, not the other way around.",
+          id: "Mahasiswa pilih satu pasang produk: ride-hailing (Gojek vs. Grab vs. Uber) atau e-commerce (Tokopedia vs. Shopee vs. Amazon). Kasih waktu 8–10 menit untuk buka kedua aplikasi dan catat 2–3 perbedaan yang mereka amati. Share temuan di chat atau langsung. Tugasmu: rangkum observasi mereka pakai kosakata HCI. 'Yang kalian notice soal posisi tombol checkout — itu sebenernya tentang visibility dan affordance.' Biarkan kosakata muncul dari observasi mereka, bukan sebaliknya."
+        },
+        why: {
+          en: "Starting from what students already know and use makes abstract theory immediately grounded. They become the experts on their own experience, and you become the person who gives that experience a name.",
+          id: "Mulai dari yang sudah mahasiswa kenal dan pakai membuat teori abstrak langsung membumi. Mereka jadi ahli atas pengalaman mereka sendiri, dan kamu jadi orang yang memberi nama pada pengalaman itu."
+        },
+        prompts: {
+          en: ["From what you just explored, which felt more intuitive? Can you pinpoint why?", "If you could change one thing in either app right now, what would it be?"],
+          id: ["Dari yang baru kalian coba, mana yang terasa lebih intuitif? Bisa dijelaskan kenapa?", "Kalau kalian bisa ubah satu hal dari salah satu aplikasi itu sekarang, apa yang akan diubah?"]
+        }
+      },
+      {
+        time: "75–90", badge: "core", tag: { en: "Looking Ahead", id: "Melihat ke Depan" },
+        title: { en: "Where is HCI Going?", id: "Ke Mana HCI Menuju?" },
+        body: {
+          en: "Brief and conversational — this isn't a lecture, it's a teaser. Show 2–3 examples: an AI chat interface, a spatial computing demo (Apple Vision Pro or similar), a voice assistant interaction. Ask: 'Do Norman's principles still apply here?' (Spoiler: yes, but the interfaces change.) Frame this as the reason HCI fundamentals matter — these principles travel across every new paradigm.",
+          id: "Singkat dan santai — ini bukan ceramah, ini teaser. Tunjukkan 2–3 contoh: antarmuka AI chat, demo spatial computing (Apple Vision Pro atau sejenis), interaksi voice assistant. Tanya: 'Apakah prinsip-prinsip HCI masih berlaku di sini?' (Spoiler: iya, tapi antarmukanya berubah.) Frame ini sebagai alasan mengapa HCI fundamental itu penting — prinsip-prinsip ini berlaku di setiap paradigma baru."
+        },
+        why: { en: "Connecting day-one content to future relevance signals to students that this course isn't just academic theory — it's a toolkit for wherever their careers go.", id: "Menghubungkan konten hari pertama dengan relevansi masa depan memberi sinyal bahwa kursus ini bukan sekadar teori akademik — ini toolkit untuk ke mana pun karir mereka pergi." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "90–100", badge: "closing", tag: { en: "Wrap-up", id: "Penutup" },
+        title: { en: "Assignment Brief & Concept Map Intro", id: "Pengantar Tugas & Peta Konsep" },
+        body: {
+          en: "Introduce the week's assignment. Keep it light: 'This isn't about writing perfectly — it's about observing.' Give 5 minutes for questions. Also introduce the concept map thread that will run through the course: 'Each week we'll build on a visual map of how all these concepts connect. Start with today — HCI, UX, UI — and draw how you understand them relating to each other.'",
+          id: "Kenalkan tugas minggu ini. Santai saja: 'Ini bukan soal nulis sempurna — ini soal mengamati.' Kasih 5 menit untuk pertanyaan. Juga perkenalkan thread peta konsep yang akan berjalan sepanjang kursus: 'Setiap minggu kita akan membangun peta visual tentang bagaimana semua konsep ini terhubung. Mulai dari hari ini — HCI, UX, UI — dan gambar bagaimana kamu memahami hubungan antar ketiganya.'"
+        },
+        why: { en: "Ending with the assignment contextualised (not just listed) increases the chance students actually understand what's expected and why it matters.", id: "Mengakhiri dengan tugas yang dikontekstualisasikan (bukan sekadar disebutkan) meningkatkan kemungkinan mahasiswa benar-benar memahami apa yang diharapkan dan mengapa itu penting." },
+        prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "Reflection Note Rubric", id: "Rubrik Catatan Refleksi" },
+      rows: [
+        { criterion: { en: "Observation quality", id: "Kualitas observasi" }, desc: { en: "Specific, personal, concrete examples — not generic statements", id: "Contoh spesifik, personal, konkret — bukan pernyataan generik" }, points: "40%" },
+        { criterion: { en: "Reflective thinking", id: "Kedalaman refleksi" }, desc: { en: "Shows genuine curiosity and personal insight about interface experience", id: "Menunjukkan rasa ingin tahu dan wawasan personal tentang pengalaman antarmuka" }, points: "40%" },
+        { criterion: { en: "Clarity", id: "Kejelasan" }, desc: { en: "Easy to read, well-structured, stays on topic", id: "Mudah dibaca, terstruktur, tetap pada topik" }, points: "20%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "First session — we start with the big picture. What is HCI? How is it different from UX and UI? And why does it matter for building things people actually enjoy using? We'll also spend the first 15 minutes setting up our class agreement together, and close with a look at where interfaces are heading.",
+      id: "Sesi pertama — kita mulai dari gambaran besar. Apa itu HCI? Apa bedanya dengan UX dan UI? Dan kenapa itu penting untuk membangun sesuatu yang benar-benar nyaman digunakan? Kita juga akan habiskan 15 menit pertama untuk menyusun kesepakatan kelas bersama, dan tutup dengan melihat ke mana antarmuka menuju."
+    },
+    whatWeDo: {
+      en: ["Set up our class social contract together (Miro/Padlet)", "Analyze good vs. bad interfaces from apps we use daily", "Explore what makes HCI different from UX and UI", "Compare similar products: Gojek vs. Grab vs. Uber, or Tokopedia vs. Shopee vs. Amazon", "Quick peek at the future of HCI: AI, voice, spatial interfaces"],
+      id: ["Buat kesepakatan kelas bersama (Miro/Padlet)", "Analisis antarmuka bagus vs. buruk dari aplikasi yang kita pakai sehari-hari", "Telusuri apa yang membuat HCI berbeda dari UX dan UI", "Bandingkan produk serupa: Gojek vs. Grab vs. Uber, atau Tokopedia vs. Shopee vs. Amazon", "Sekilas masa depan HCI: AI, suara, antarmuka spasial"]
+    },
+    assignment: {
+      title: { en: "Reflection Note", id: "Catatan Refleksi" },
+      desc: {
+        en: "Pick one app or digital product you use every day. Write 500 words on what makes it work (or not work) for you as a user. What feels intuitive? What frustrates you? You don't need to use HCI vocabulary yet — just observe and reflect honestly. Include 2–3 screenshots to support your points.",
+        id: "Pilih satu aplikasi atau produk digital yang kamu pakai setiap hari. Tulis 500 kata tentang apa yang membuatnya berhasil (atau tidak berhasil) untukmu sebagai pengguna. Apa yang terasa intuitif? Apa yang membuatmu frustrasi? Kamu belum perlu pakai kosakata HCI — cukup amati dan refleksikan dengan jujur. Sertakan 2–3 screenshot untuk mendukung poin-poinmu."
+      },
+      due: { en: "Before Session 2 · April 14", id: "Sebelum Sesi 2 · 14 April" }
+    },
+    refs: {
+      books: [
+        { authors: "Rogers, Sharp & Preece (2023)", chapter: "Chapter 1", topic: { en: "What is Interaction Design?", id: "Apa itu Interaction Design?" } },
+        { authors: "Norman (2013)", chapter: "Chapter 1", topic: { en: "The Psychopathology of Everyday Things", id: "Psikologi Benda Sehari-hari" } },
+        { authors: "Benyon (2019)", chapter: "Chapter 1", topic: { en: "Designing User Experience — an Overview", id: "Mendesain User Experience — Gambaran Umum" } },
+      ],
+      online: [
+        { title: "UX vs. UI: What's the Difference?", url: "https://www.nngroup.com/articles/definition-user-experience/", source: "Nielsen Norman Group" },
+        { title: "What is Human-Computer Interaction (HCI)?", url: "https://www.interaction-design.org/literature/topics/human-computer-interaction", source: "Interaction Design Foundation" },
+      ]
+    }
+  }
+},
+{
+  no: 2, icon: "◈",
+  date: { en: "April 14, 2026", id: "14 April 2026" },
+  color: "#5B4BAF", light: "#F0EEFF", border: "#C9C0F0",
+  title: { en: "Human Factors & Cognitive Psychology", id: "Faktor Manusia & Psikologi Kognitif" },
+  subtitle: { en: "Why our brains make interfaces hard.", id: "Mengapa otak kita bikin antarmuka jadi susah." },
+  instructor: {
+    prep: {
+      en: "Prepare 2–3 examples of apps that create obvious cognitive overload (complicated forms, cluttered dashboards, confusing menus). Have a simple cognitive walkthrough template ready to share (a Google Doc works fine). This session is theory-heavy — break it up with the walkthrough exercise around the 45-minute mark to keep energy up.",
+      id: "Siapkan 2–3 contoh aplikasi yang jelas bikin cognitive overload (formulir rumit, dashboard penuh, menu membingungkan). Siapin template cognitive walkthrough sederhana untuk dibagikan (Google Doc sudah cukup). Sesi ini banyak teorinya — pecah dengan latihan walkthrough sekitar menit ke-45 biar energinya tetap hidup."
+    },
+    blocks: [
+      {
+        time: "0–10", badge: "warmup", tag: { en: "Warm-up", id: "Pemanasan" },
+        title: { en: "Recap & Connect", id: "Recap & Koneksi" },
+        body: {
+          en: "'From your reflection notes — who found something that frustrated them? Who found something that surprised them?' 2–3 volunteers share. Connect directly: 'What you experienced is what we're explaining today — why does that frustration happen in the first place?'",
+          id: "'Dari catatan refleksi kalian — siapa yang nemuin sesuatu yang bikin frustrasi? Siapa yang nemuin sesuatu yang mengejutkan?' 2–3 orang berbagi. Hubungkan langsung: 'Apa yang kalian rasakan itu yang akan kita jelaskan hari ini — kenapa frustrasi itu bisa terjadi?'"
+        },
+        why: { en: "Starting from student-generated material makes them feel heard and shows that their assignments directly feed the class discussion.", id: "Mulai dari materi yang dihasilkan mahasiswa membuat mereka merasa didengar dan menunjukkan bahwa tugas mereka langsung berkontribusi pada diskusi kelas." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "10–45", badge: "core", tag: { en: "Core Concepts", id: "Konsep Inti" },
+        title: { en: "How the Human Mind Works (and Breaks)", id: "Bagaimana Pikiran Manusia Bekerja (dan Gagal)" },
+        body: {
+          en: "Cover the key cognitive concepts with a real UI example for each:\n• Perception & pre-attentive processing — what the eye catches instantly (colour, shape, motion). Why red badges work.\n• Memory: Miller's Law (7±2 chunks) — why long navigation menus fail.\n• Attention — limited resource. Why infinite scroll is intentionally addictive.\n• Mental models — what users expect based on prior experience. When an app violates a mental model, it feels 'broken.'\n• Cognitive load — the cost of having to think. Three types: intrinsic, extraneous, germane.\n\nPause at minute 30 for a quick chat check: 'Which of these do you recognise from apps you use?'",
+          id: "Bahas konsep kognitif kunci dengan contoh UI nyata untuk masing-masing:\n• Persepsi & pre-attentive processing — apa yang langsung ditangkap mata (warna, bentuk, gerakan). Kenapa badge merah berhasil.\n• Memori: Miller's Law (7±2 chunk) — kenapa menu navigasi yang panjang gagal.\n• Perhatian — sumber daya terbatas. Kenapa infinite scroll sengaja dibuat adiktif.\n• Model mental — apa yang diharapkan pengguna berdasarkan pengalaman sebelumnya. Ketika aplikasi melanggar model mental, rasanya 'rusak.'\n• Cognitive load — biaya dari harus berpikir. Tiga tipe: intrinsik, ekstraneous, germane.\n\nBerhenti di menit ke-30 untuk cek chat cepat: 'Mana dari ini yang kalian kenali dari aplikasi yang dipakai?'"
+        },
+        why: { en: "Anchoring each cognitive concept to a familiar UI example makes abstract psychology immediately applicable. Students stop seeing interfaces as aesthetic objects and start seeing them as cognitive environments.", id: "Menghubungkan setiap konsep kognitif ke contoh UI yang familiar membuat psikologi abstrak langsung bisa diterapkan. Mahasiswa berhenti melihat antarmuka sebagai objek estetik dan mulai melihatnya sebagai lingkungan kognitif." },
+        prompts: {
+          en: ["Pernah buka app terus lupa mau ngapain? That's working memory decay in action.", "Kenapa Instagram feed-nya infinite scroll? Is it a UX decision or a business decision?"],
+          id: ["Pernah buka app terus lupa mau ngapain? Itu working memory decay in action.", "Kenapa Instagram feed-nya infinite scroll? Ini keputusan UX atau keputusan bisnis?"]
+        }
+      },
+      {
+        time: "45–75", badge: "activity", tag: { en: "Exercise", id: "Latihan" },
+        title: { en: "Cognitive Walkthrough", id: "Cognitive Walkthrough" },
+        body: {
+          en: "Share the template. Students pick one task in an app they have installed (e.g., top up an e-wallet, find and change a setting, track an order). For each step of the task, they answer: What does the user need to know or remember? What does the interface show? Where might they get confused or make an error?\n\n20 minutes individual work, then 2–3 students share their most interesting finding. Synthesize: 'The problems you found — which cognitive principle do they violate?'",
+          id: "Bagikan template. Mahasiswa pilih satu tugas di aplikasi yang mereka punya (mis. top up e-wallet, cari dan ubah pengaturan, lacak pesanan). Untuk setiap langkah tugas, mereka jawab: Apa yang perlu diketahui atau diingat pengguna? Apa yang ditampilkan antarmuka? Di mana mereka mungkin bingung atau salah?\n\n20 menit kerja individu, lalu 2–3 mahasiswa berbagi temuan paling menarik. Rangkum: 'Masalah yang kalian temukan — prinsip kognitif mana yang dilanggar?'"
+        },
+        why: { en: "Applying a structured method immediately after learning it builds muscle memory. The walkthrough format also becomes part of their professional toolkit — it's used in real UX practice.", id: "Menerapkan metode terstruktur segera setelah mempelajarinya membangun muscle memory. Format walkthrough ini juga menjadi bagian dari toolkit profesional mereka — digunakan dalam praktik UX nyata." },
+        prompts: { en: ["What was the most surprising thing you found in your walkthrough?", "Did the app 'explain' each step to you, or did you have to figure it out?"], id: ["Apa yang paling mengejutkan yang kalian temukan dalam walkthrough-mu?", "Apakah aplikasi itu 'menjelaskan' setiap langkah, atau harus kamu tebak sendiri?"] }
+      },
+      {
+        time: "75–90", badge: "core", tag: { en: "Broadening the Lens", id: "Memperluas Perspektif" },
+        title: { en: "Cognitive & Perceptual Diversity", id: "Keberagaman Kognitif & Perseptual" },
+        body: {
+          en: "Brief but important: not all users process information the same way. Show examples of interfaces used by elderly users, users with low vision, users with ADHD or attention disorders. Frame it this way: 'Designing for the edges makes the center better.' What works for a stressed, distracted user in bad lighting works even better for a calm, focused one. This is the first seed of accessibility thinking — we'll come back to this more practically in Session 5.",
+          id: "Singkat tapi penting: tidak semua pengguna memproses informasi dengan cara yang sama. Tunjukkan contoh antarmuka yang digunakan oleh pengguna lansia, pengguna dengan penglihatan rendah, pengguna dengan ADHD atau gangguan perhatian. Frame seperti ini: 'Mendesain untuk kelompok ekstrem membuat tengah menjadi lebih baik.' Yang berhasil untuk pengguna yang stres dan terganggu dalam cahaya buruk akan jauh lebih baik untuk pengguna yang tenang dan fokus. Ini benih pertama pemikiran aksesibilitas — kita akan kembali ke ini secara lebih praktis di Sesi 5."
+        },
+        why: { en: "Introducing cognitive diversity early plants the accessibility mindset before it becomes a formal 'topic' — students absorb it as a natural extension of good design, not a compliance box to tick.", id: "Memperkenalkan keberagaman kognitif sejak awal menanam mindset aksesibilitas sebelum menjadi 'topik' formal — mahasiswa menyerapnya sebagai perpanjangan alami dari desain yang baik, bukan kotak kepatuhan yang harus dicentang." },
+        prompts: { en: ["Siapa di sini yang punya keluarga yang sering minta bantuan pakai aplikasi? Kenapa kira-kira?", "Is it the user's fault for not understanding, or the designer's fault for not explaining?"], id: ["Siapa di sini yang punya keluarga yang sering minta bantuan pakai aplikasi? Kenapa kira-kira?", "Salah siapa kalau user gak ngerti — salah user-nya atau salah desainer-nya?"] }
+      },
+      {
+        time: "90–100", badge: "closing", tag: { en: "Wrap-up", id: "Penutup" },
+        title: { en: "Assignment Brief", id: "Pengantar Tugas" },
+        body: { en: "Walk through the assignment clearly. Emphasize: pick ONE screen, not the whole app. The goal is depth, not breadth — one well-analysed screen is better than five surface-level ones.", id: "Jelaskan tugas dengan jelas. Tekankan: pilih SATU layar, bukan seluruh aplikasi. Tujuannya kedalaman, bukan luasnya — satu layar yang dianalisis dengan baik lebih baik dari lima yang hanya di permukaan." },
+        why: { en: "", id: "" }, prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "UI Critique Rubric", id: "Rubrik Kritik Antarmuka" },
+      rows: [
+        { criterion: { en: "Correct use of concepts", id: "Penggunaan konsep yang benar" }, desc: { en: "Cognitive concepts applied accurately (not just mentioned)", id: "Konsep kognitif diterapkan secara akurat (bukan hanya disebutkan)" }, points: "40%" },
+        { criterion: { en: "Specificity", id: "Spesifisitas" }, desc: { en: "Problems identified are concrete and observable, not vague", id: "Masalah yang diidentifikasi konkret dan bisa diamati, bukan samar-samar" }, points: "35%" },
+        { criterion: { en: "Screenshot support", id: "Dukungan screenshot" }, desc: { en: "Visual evidence provided and clearly annotated", id: "Bukti visual tersedia dan jelas dianotasi" }, points: "25%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "This session is about understanding the 'human' side of Human-Computer Interaction. Why do we forget things mid-task? Why do some layouts feel instantly clear and others feel overwhelming? We'll explore how human cognition shapes what good (and bad) interfaces look like — and why user errors are almost always a design problem, not a user problem.",
+      id: "Sesi ini tentang memahami sisi 'manusia' dalam Human-Computer Interaction. Kenapa kita lupa sesuatu di tengah-tengah tugas? Kenapa beberapa tata letak langsung terasa jelas dan yang lain terasa membebani? Kita akan telusuri bagaimana kognisi manusia membentuk seperti apa antarmuka yang baik (dan buruk) — dan kenapa kesalahan pengguna hampir selalu masalah desain, bukan masalah pengguna."
+    },
+    whatWeDo: {
+      en: ["Explore perception, memory, attention, and mental models in interface design", "Learn what cognitive load is and why it matters", "Do a cognitive walkthrough on a real app", "Discuss how cognitive diversity affects interface needs"],
+      id: ["Telusuri persepsi, memori, perhatian, dan model mental dalam desain antarmuka", "Pelajari apa itu cognitive load dan mengapa itu penting", "Lakukan cognitive walkthrough pada aplikasi nyata", "Diskusikan bagaimana keberagaman kognitif mempengaruhi kebutuhan antarmuka"]
+    },
+    assignment: {
+      title: { en: "UI Critique Report", id: "Laporan Kritik Antarmuka" },
+      desc: {
+        en: "Pick ONE screen from any digital product (not the whole app — just one screen). Identify 3 usability problems on that screen and explain each one using at least one concept from today's session: cognitive load, mental model, perception, memory limits, or attention. 1 page max. Include a screenshot with annotations.",
+        id: "Pilih SATU layar dari produk digital apapun (bukan seluruh aplikasi — cukup satu layar). Identifikasi 3 masalah usabilitas di layar itu dan jelaskan masing-masing menggunakan setidaknya satu konsep dari sesi hari ini: cognitive load, mental model, persepsi, batas memori, atau perhatian. Maksimal 1 halaman. Sertakan screenshot dengan anotasi."
+      },
+      due: { en: "Before Session 3 · April 21", id: "Sebelum Sesi 3 · 21 April" }
+    },
+    refs: {
+      books: [
+        { authors: "Johnson (2022)", chapter: "Chapters 1–4", topic: { en: "Perception, Attention, Memory in UI", id: "Persepsi, Perhatian, Memori dalam UI" } },
+        { authors: "Rogers, Sharp & Preece (2023)", chapter: "Chapter 3", topic: { en: "Cognition and Interaction", id: "Kognisi dan Interaksi" } },
+        { authors: "Norman (2013)", chapter: "Chapter 2", topic: { en: "The Psychology of Everyday Actions", id: "Psikologi Tindakan Sehari-hari" } },
+      ],
+      online: [
+        { title: "Laws of UX — Cognitive Principles", url: "https://lawsofux.com", source: "lawsofux.com — free, beautifully designed reference" },
+        { title: "Cognitive Load Theory and UX", url: "https://www.nngroup.com/articles/cognitive-load/", source: "Nielsen Norman Group" },
+      ]
+    }
+  }
+},
+{
+  no: 3, icon: "◉",
+  date: { en: "April 21, 2026", id: "21 April 2026" },
+  color: "#B56A1E", light: "#FDF4E8", border: "#E8C88A",
+  title: { en: "User Research Methods", id: "Metode Riset Pengguna" },
+  subtitle: { en: "Stop assuming. Start asking.", id: "Berhenti berasumsi. Mulai bertanya." },
+  instructor: {
+    prep: {
+      en: "Prepare mock interview scenario cards (5–6 short scenarios). Set up breakout rooms if using Zoom/Meet. Have a simple empathy map template ready to share (FigJam or a Google Slide works). Remind students in advance to bring their reflection notes as potential research material.",
+      id: "Siapkan kartu skenario wawancara simulasi (5–6 skenario singkat). Siapkan breakout room jika pakai Zoom/Meet. Siapin template empathy map sederhana untuk dibagikan (FigJam atau Google Slide). Ingatkan mahasiswa sebelumnya untuk membawa catatan refleksi mereka sebagai bahan riset potensial."
+    },
+    blocks: [
+      {
+        time: "0–10", badge: "warmup", tag: { en: "Warm-up", id: "Pemanasan" },
+        title: { en: "The Danger of Assumptions", id: "Bahaya Asumsi" },
+        body: {
+          en: "'Has anyone ever been corrected by an app — where the app assumed you wanted something and it was wrong?' Share a few examples. Then flip it: 'Have you ever designed or built something that you thought was obvious, but someone else found confusing?' Bridge: 'User research is how we stop designing from assumptions.'",
+          id: "'Pernah ada yang pernah dikoreksi oleh aplikasi — di mana aplikasinya mengasumsikan kamu mau sesuatu dan itu salah?' Berbagi beberapa contoh. Lalu balik: 'Pernah kamu mendesain atau membangun sesuatu yang menurutmu sudah jelas, tapi orang lain merasa bingung?' Bridge: 'Riset pengguna adalah cara kita berhenti mendesain dari asumsi.'"
+        },
+        why: { en: "Grounding the session in a shared moment of 'assumption gone wrong' makes the case for user research feel personal and urgent, not just methodological.", id: "Memulai sesi dengan momen bersama 'asumsi yang salah' membuat argumen untuk riset pengguna terasa personal dan mendesak, bukan sekadar metodologis." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "10–40", badge: "core", tag: { en: "Core Concepts", id: "Konsep Inti" },
+        title: { en: "Research Methods Landscape", id: "Lanskap Metode Riset" },
+        body: {
+          en: "Cover the key frameworks:\n• Qualitative vs. quantitative — qual tells you WHY, quant tells you HOW MANY.\n• Attitudinal vs. behavioural — what users SAY vs. what they DO (these often differ).\n• Formative vs. summative — research during design vs. research after launch.\n\nKey methods to cover with one sentence each: interviews, surveys, observation/contextual inquiry, diary studies, card sorting. For each: when to use it, what it reveals, its main limitation.\n\nKey heuristic to share: 'If you want to know why someone does something, watch them do it.'",
+          id: "Bahas framework kunci:\n• Kualitatif vs. kuantitatif — kualitatif menjawab MENGAPA, kuantitatif menjawab BERAPA BANYAK.\n• Attitudinal vs. behavioural — apa yang pengguna KATAKAN vs. apa yang mereka LAKUKAN (ini sering berbeda).\n• Formatif vs. sumatif — riset selama desain vs. riset setelah diluncurkan.\n\nMetode kunci yang perlu dibahas dengan satu kalimat masing-masing: wawancara, survei, observasi/contextual inquiry, diary studies, card sorting. Untuk setiap: kapan menggunakannya, apa yang diungkapkan, keterbatasan utamanya.\n\nHeuristik kunci untuk dibagikan: 'Kalau mau tahu kenapa seseorang melakukan sesuatu, tonton mereka melakukannya.'"
+        },
+        why: { en: "Framing qual vs. quant as 'why vs. how many' gives students a memorable decision rule they'll use throughout their careers.", id: "Framing kualitatif vs. kuantitatif sebagai 'mengapa vs. berapa banyak' memberi mahasiswa aturan keputusan yang mudah diingat yang akan mereka gunakan sepanjang karir." },
+        prompts: {
+          en: ["Would you trust what a user says, or what they do? (Setup: they often contradict each other)", "What's the risk of only running surveys and never doing interviews?"],
+          id: ["Kalian lebih percaya apa yang user bilang, atau apa yang mereka lakukan? (Setup: keduanya sering bertentangan)", "Apa risikonya kalau hanya pakai survei dan tidak pernah wawancara?"]
+        }
+      },
+      {
+        time: "40–60", badge: "core", tag: { en: "Tools", id: "Alat" },
+        title: { en: "Personas & Empathy Maps", id: "Persona & Empathy Map" },
+        body: {
+          en: "Build one persona live together based on an imaginary research session about a food delivery app. Show how you move from raw interview quotes → insights → persona characteristics. Key point: personas are built from research data, not assumptions. A persona you invented without talking to users is a stereotype.\n\nThen: empathy map (says / thinks / does / feels). Show how both tools translate research into design decisions: 'Because our user feels anxious about delivery time, our design should...'",
+          id: "Bangun satu persona secara langsung bersama berdasarkan sesi riset imajiner tentang aplikasi pesan makanan. Tunjukkan bagaimana kamu bergerak dari kutipan wawancara mentah → insights → karakteristik persona. Poin kunci: persona dibangun dari data riset, bukan asumsi. Persona yang kamu buat tanpa bicara ke pengguna adalah stereotip.\n\nLalu: empathy map (mengatakan / memikirkan / melakukan / merasakan). Tunjukkan bagaimana kedua alat ini menerjemahkan riset ke keputusan desain: 'Karena pengguna kita merasa cemas soal waktu pengiriman, desain kita seharusnya...'"
+        },
+        why: { en: "Building a persona live in class (rather than just explaining it) shows students the actual reasoning process — they see how messy data becomes a coherent profile.", id: "Membangun persona secara langsung di kelas (bukan sekadar menjelaskannya) menunjukkan proses penalaran yang sebenarnya — mahasiswa melihat bagaimana data yang berantakan menjadi profil yang koheren." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "60–80", badge: "activity", tag: { en: "Activity", id: "Aktivitas" },
+        title: { en: "Mock User Interviews", id: "Simulasi Wawancara Pengguna" },
+        body: {
+          en: "Pairs. One person is the 'user' (using their own phone as the product). One person is the 'researcher.' Topic: 'Walk me through how you use your most-used app in a typical day.' 10 minutes, then swap roles.\n\nAfter: debrief together. 'What surprised you about what your partner said or did? Did they use the app the way you expected?' Connect back to attitudinal vs. behavioural research.",
+          id: "Berpasangan. Satu orang adalah 'pengguna' (menggunakan HP mereka sendiri sebagai produk). Satu orang adalah 'peneliti.' Topik: 'Ceritakan bagaimana kamu menggunakan aplikasi yang paling sering dipakai dalam sehari yang biasa.' 10 menit, lalu tukar peran.\n\nSetelah itu: debrief bersama. 'Apa yang mengejutkanmu dari apa yang partner-mu katakan atau lakukan? Apakah mereka menggunakan aplikasi seperti yang kamu harapkan?' Hubungkan kembali ke riset attitudinal vs. behavioural."
+        },
+        why: { en: "Role-playing both sides of an interview in the same session gives students empathy for both the researcher's challenge (asking without leading) and the user's experience (being observed).", id: "Memainkan kedua sisi wawancara dalam sesi yang sama memberi mahasiswa empati untuk tantangan peneliti (bertanya tanpa memimpin) dan pengalaman pengguna (diamati)." },
+        prompts: { en: ["What was hardest about interviewing without asking leading questions?", "Did your partner 'think aloud' naturally, or did you have to encourage them?"], id: ["Apa yang paling susah dari wawancara tanpa mengajukan pertanyaan yang mengarahkan?", "Apakah partner-mu 'berpikir keras' secara alami, atau perlu didorong?"] }
+      },
+      {
+        time: "80–95", badge: "core", tag: { en: "Ethics", id: "Etika" },
+        title: { en: "Research Ethics", id: "Etika Riset" },
+        body: {
+          en: "Brief but non-negotiable: informed consent (participants know what they're part of and can opt out), avoiding leading questions, not over-interpreting data, representing users honestly in your personas. Share real examples where poor research ethics led to poor (or harmful) design decisions — recommendation algorithms trained on biased data, interfaces that exclude certain groups.",
+          id: "Singkat tapi tidak bisa diabaikan: informed consent (peserta tahu apa yang mereka ikuti dan bisa keluar), menghindari pertanyaan mengarahkan, tidak menginterpretasi data berlebihan, merepresentasikan pengguna dengan jujur dalam persona. Bagikan contoh nyata di mana etika riset yang buruk menyebabkan keputusan desain yang buruk (atau berbahaya) — algoritma rekomendasi yang dilatih pada data bias, antarmuka yang mengecualikan kelompok tertentu."
+        },
+        why: { en: "Framing ethics as a design quality issue (not a regulatory hoop) makes students more likely to internalize it. Bad research ethics produces bad design — that's the case to make.", id: "Framing etika sebagai masalah kualitas desain (bukan rintangan regulasi) membuat mahasiswa lebih mungkin menginternalisasinya. Etika riset yang buruk menghasilkan desain yang buruk — itulah argumen yang perlu dibuat." },
+        prompts: { en: ["If a participant seems uncomfortable, what do you do?", "What's the difference between a leading question and a clarifying question?"], id: ["Kalau peserta terlihat tidak nyaman, apa yang kamu lakukan?", "Apa bedanya pertanyaan yang mengarahkan dengan pertanyaan yang mengklarifikasi?"] }
+      },
+      {
+        time: "95–100", badge: "closing", tag: { en: "Wrap-up", id: "Penutup" },
+        title: { en: "Assignment Brief", id: "Pengantar Tugas" },
+        body: { en: "Walk through the assignment. Key tip to share: 'Interview someone you don't usually talk to about technology — a parent, grandparent, or friend from a different field. The more unexpected their relationship with the product, the more interesting your findings.'", id: "Jelaskan tugas. Tip kunci untuk dibagikan: 'Wawancarai seseorang yang biasanya tidak kamu ajak bicara soal teknologi — orang tua, kakek/nenek, atau teman dari bidang yang berbeda. Semakin tidak terduga hubungan mereka dengan produk, semakin menarik temuanmu.'" },
+        why: { en: "", id: "" }, prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "Persona + Empathy Map Rubric", id: "Rubrik Persona + Empathy Map" },
+      rows: [
+        { criterion: { en: "Research-grounded", id: "Berbasis riset" }, desc: { en: "Persona characteristics come from interview data, not assumptions", id: "Karakteristik persona berasal dari data wawancara, bukan asumsi" }, points: "40%" },
+        { criterion: { en: "Empathy map completeness", id: "Kelengkapan empathy map" }, desc: { en: "All four quadrants (says/thinks/does/feels) meaningfully filled", id: "Keempat kuadran (mengatakan/memikirkan/melakukan/merasakan) terisi secara bermakna" }, points: "30%" },
+        { criterion: { en: "Design implication", id: "Implikasi desain" }, desc: { en: "Brief note on what you'd design differently based on what you learned", id: "Catatan singkat tentang apa yang akan didesain berbeda berdasarkan apa yang dipelajari" }, points: "30%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "How do you know if your design actually works for real people? You research them. This session covers the core user research methods — interviews, surveys, observation — and the tools that turn raw data into design decisions: personas and empathy maps. We'll also do live mock interviews in pairs.",
+      id: "Bagaimana kamu tahu apakah desainmu benar-benar berhasil untuk orang nyata? Kamu riset mereka. Sesi ini mencakup metode riset pengguna inti — wawancara, survei, observasi — dan alat yang mengubah data mentah menjadi keputusan desain: persona dan empathy map. Kita juga akan melakukan simulasi wawancara langsung berpasangan."
+    },
+    whatWeDo: {
+      en: ["Learn when to use qualitative vs. quantitative research", "Build a persona and empathy map live in class", "Practice user interviews in pairs", "Discuss research ethics: consent, bias, honest representation"],
+      id: ["Pelajari kapan menggunakan riset kualitatif vs. kuantitatif", "Bangun persona dan empathy map secara langsung di kelas", "Latihan wawancara pengguna berpasangan", "Diskusikan etika riset: consent, bias, representasi yang jujur"]
+    },
+    assignment: {
+      title: { en: "Persona + Empathy Map", id: "Persona + Empathy Map" },
+      desc: {
+        en: "Conduct a 10–15 minute interview with one person (family member, friend, colleague) about a digital product they use regularly. Then build: a persona based on what you learned, and an empathy map. Include a brief note (3–4 sentences) on what you would design differently based on what you learned. You can use any tool: FigJam, Miro, Canva, or even a hand-drawn scan.",
+        id: "Lakukan wawancara 10–15 menit dengan satu orang (anggota keluarga, teman, kolega) tentang produk digital yang mereka gunakan secara rutin. Kemudian bangun: persona berdasarkan apa yang kamu pelajari, dan empathy map. Sertakan catatan singkat (3–4 kalimat) tentang apa yang akan kamu desain berbeda berdasarkan apa yang kamu pelajari. Bisa menggunakan alat apapun: FigJam, Miro, Canva, atau bahkan gambar tangan yang discan."
+      },
+      due: { en: "Before Session 4 · April 28", id: "Sebelum Sesi 4 · 28 April" }
+    },
+    refs: {
+      books: [
+        { authors: "Lazar, Feng & Hochheiser (2021)", chapter: "Chapters 1–3", topic: { en: "Introduction to HCI Research Methods", id: "Pengantar Metode Riset HCI" } },
+        { authors: "Rogers, Sharp & Preece (2023)", chapter: "Chapters 7–8", topic: { en: "Data Gathering & Analysis", id: "Pengumpulan & Analisis Data" } },
+      ],
+      online: [
+        { title: "Empathy Mapping: A Guide to Getting Inside a User's Head", url: "https://www.nngroup.com/articles/empathy-mapping/", source: "Nielsen Norman Group" },
+        { title: "How to Conduct User Interviews", url: "https://www.interaction-design.org/literature/article/how-to-conduct-user-interviews", source: "Interaction Design Foundation" },
+      ]
+    }
+  }
+},
+{
+  no: 4, icon: "◇",
+  date: { en: "April 28, 2026", id: "28 April 2026" },
+  color: "#1A5FAF", light: "#E8F0FB", border: "#A8C4EE",
+  title: { en: "Interaction Design & Norman's Design Principles", id: "Desain Interaksi & Prinsip Desain Norman" },
+  subtitle: { en: "The rules that explain why some things just feel right.", id: "Aturan yang menjelaskan kenapa beberapa hal terasa pas begitu saja." },
+  instructor: {
+    prep: {
+      en: "Find 2–3 'Norman Door' images or short videos (doors with handles that should be pushed, push bars that should be pulled — easily findable on YouTube). Prepare a real, publicly accessible website to use for the live audit — a university portal or government site works great because they tend to have both good and bad examples. Have a simple IA exercise template ready.",
+      id: "Cari 2–3 gambar atau video singkat 'Norman Door' (pintu dengan handle yang seharusnya didorong, push bar yang seharusnya ditarik — mudah ditemukan di YouTube). Siapkan website publik yang bisa diakses untuk audit langsung — portal universitas atau situs pemerintah bagus karena cenderung punya contoh baik dan buruk. Siapin template latihan IA sederhana."
+    },
+    blocks: [
+      {
+        time: "0–10", badge: "warmup", tag: { en: "Hook", id: "Kail Pembuka" },
+        title: { en: "The Door That Confuses Everyone", id: "Pintu yang Membingungkan Semua Orang" },
+        body: {
+          en: "Show a Norman Door image or video. Ask: 'Who has pushed a door that should be pulled — or vice versa?' (Everyone has.) Ask: 'Whose fault was that?' Let them answer. Then reveal Norman's argument: if the door confuses people consistently, it's a design problem — not a user problem. This is the entire foundation of Norman's work, and it's immediately relatable.",
+          id: "Tampilkan gambar atau video Norman Door. Tanya: 'Siapa yang pernah mendorong pintu yang seharusnya ditarik — atau sebaliknya?' (Semua pernah.) Tanya: 'Salah siapa itu?' Biarkan mereka menjawab. Lalu ungkapkan argumen Norman: kalau pintu membingungkan orang secara konsisten, itu masalah desain — bukan masalah pengguna. Ini seluruh fondasi karya Norman, dan langsung relatable."
+        },
+        why: { en: "Starting with a physical, universally experienced frustration makes Norman's abstract principles immediately concrete. Everyone in the room has been 'Norman Doored.'", id: "Mulai dengan frustrasi fisik yang dialami semua orang membuat prinsip abstrak Norman langsung konkret. Semua orang di ruangan pernah di-'Norman Door'." },
+        prompts: { en: ["Can you think of a digital equivalent of a Norman Door?", "If the user is never wrong — who is responsible when something fails?"], id: ["Bisa kasih contoh digital yang setara dengan Norman Door?", "Kalau user tidak pernah salah — siapa yang bertanggung jawab ketika sesuatu gagal?"] }
+      },
+      {
+        time: "10–50", badge: "core", tag: { en: "Core Concept", id: "Konsep Inti" },
+        title: { en: "Norman's 6 Principles — One by One", id: "6 Prinsip Norman — Satu per Satu" },
+        body: {
+          en: "Go through all six with a good + bad UI example for each. Spend extra time on Affordances vs. Signifiers — students reliably confuse these.\n\n1. Visibility — users should see what actions are available. Bad: hidden menus, buried settings.\n2. Feedback — the system communicates what just happened. Bad: no confirmation after a form submission.\n3. Constraints — limit what users can do to prevent errors. Good: date pickers that only allow valid dates.\n4. Mapping — logical relationship between controls and effects. Bad: volume slider going the wrong direction.\n5. Consistency — same elements behave the same way throughout. Bad: different swipe gestures in different parts of the same app.\n6. Affordances & Signifiers — does it look like what it does? A button should look tappable.\n\nAfter each principle, ask: 'Kasih satu contoh dari app yang kalian pakai sehari-hari.'",
+          id: "Bahas semua enam dengan contoh UI bagus + buruk untuk masing-masing. Habiskan waktu ekstra untuk Affordances vs. Signifiers — mahasiswa sering membingungkan ini.\n\n1. Visibility — pengguna harus bisa melihat aksi yang tersedia. Buruk: menu tersembunyi, pengaturan yang terpendam.\n2. Feedback — sistem mengkomunikasikan apa yang baru terjadi. Buruk: tidak ada konfirmasi setelah pengiriman formulir.\n3. Constraints — batasi apa yang bisa dilakukan pengguna untuk mencegah kesalahan. Baik: date picker yang hanya memperbolehkan tanggal valid.\n4. Mapping — hubungan logis antara kontrol dan efek. Buruk: slider volume yang bergerak ke arah yang salah.\n5. Consistency — elemen yang sama berperilaku sama di mana-mana. Buruk: gesture swipe yang berbeda di bagian berbeda dari aplikasi yang sama.\n6. Affordances & Signifiers — apakah tampilannya mencerminkan fungsinya? Tombol harus terlihat bisa ditekan.\n\nSetelah setiap prinsip, tanya: 'Kasih satu contoh dari app yang kalian pakai sehari-hari.'"
+        },
+        why: { en: "Going one-by-one with examples from the students' own apps turns an abstract framework into something they can apply immediately — and makes the audit exercise that follows much more productive.", id: "Satu per satu dengan contoh dari aplikasi mahasiswa sendiri mengubah framework abstrak menjadi sesuatu yang langsung bisa diterapkan — dan membuat latihan audit berikutnya jauh lebih produktif." },
+        prompts: {
+          en: ["Which of these 6 principles do you think is most commonly violated? Why?", "Can a principle be 'too much'? E.g., too many constraints?"],
+          id: ["Dari 6 prinsip ini, mana yang menurut kalian paling sering dilanggar? Kenapa?", "Bisakah sebuah prinsip 'terlalu banyak'? Mis. terlalu banyak constraints?"]
+        }
+      },
+      {
+        time: "50–70", badge: "activity", tag: { en: "Live Activity", id: "Aktivitas Langsung" },
+        title: { en: "Interface Audit — Live", id: "Audit Antarmuka — Langsung" },
+        body: {
+          en: "Share your screen and navigate a publicly accessible site (university portal, government service, or airline booking page). Students use the chat to log violations and successes in real time — 'Visibility violation on the nav bar,' 'Good feedback on the search field.' After 10 minutes of auditing, spend 10 minutes reviewing together: where do violations cluster? Are there any trade-offs that might explain them?",
+          id: "Share layar dan navigasi situs yang bisa diakses publik (portal universitas, layanan pemerintah, atau halaman pemesanan maskapai). Mahasiswa gunakan chat untuk mencatat pelanggaran dan keberhasilan secara real time — 'Pelanggaran Visibility di nav bar,' 'Feedback yang bagus di kolom pencarian.' Setelah 10 menit audit, habiskan 10 menit untuk meninjau bersama: di mana pelanggaran mengelompok? Apakah ada trade-off yang mungkin menjelaskannya?"
+        },
+        why: { en: "A shared, live audit builds analytical vocabulary as a group — students hear each other's reasoning, not just yours. It also shows that HCI analysis is an observable, learnable skill.", id: "Audit bersama secara langsung membangun kosakata analitis sebagai kelompok — mahasiswa mendengar penalaran satu sama lain, bukan hanya milikmu. Ini juga menunjukkan bahwa analisis HCI adalah keterampilan yang bisa diamati dan dipelajari." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "70–85", badge: "core", tag: { en: "Concept", id: "Konsep" },
+        title: { en: "Information Architecture Basics", id: "Dasar-dasar Arsitektur Informasi" },
+        body: {
+          en: "IA is how content is organised, structured, and labelled so users can find what they need. Cover: user flows (step-by-step paths through a product), sitemaps (hierarchy of all pages/screens), and navigation systems (how users move between them). Connect back to Norman: good IA is consistent, provides visible pathways, and maps to users' mental models.\n\nQuick sketch exercise: in 8 minutes, sketch a 3-level sitemap for a hypothetical food ordering app. Share 2–3 and compare.",
+          id: "IA adalah bagaimana konten diorganisir, distrukturkan, dan dilabeli agar pengguna bisa menemukan apa yang mereka butuhkan. Bahas: user flows (jalur langkah demi langkah melalui produk), sitemaps (hierarki semua halaman/layar), dan sistem navigasi (bagaimana pengguna bergerak di antaranya). Hubungkan kembali ke Norman: IA yang baik konsisten, menyediakan jalur yang terlihat, dan sesuai dengan model mental pengguna.\n\nLatihan sketsa cepat: dalam 8 menit, sketsa sitemap 3 level untuk aplikasi pemesanan makanan hipotetis. Bagikan 2–3 dan bandingkan."
+        },
+        why: { en: "Connecting IA to Norman's principles shows that these aren't separate topics — IA decisions are interaction design decisions.", id: "Menghubungkan IA ke prinsip Norman menunjukkan bahwa ini bukan topik yang terpisah — keputusan IA adalah keputusan desain interaksi." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "85–95", badge: "core", tag: { en: "Ethics Seed", id: "Benih Etika" },
+        title: { en: "Dark Patterns as Norman Violations", id: "Dark Pattern sebagai Pelanggaran Norman" },
+        body: {
+          en: "Introduce dark patterns briefly — show 3–4 real examples: confirmshaming ('No thanks, I don't want to save money'), hidden unsubscribe links, pre-ticked checkboxes. Frame: 'Dark patterns are Norman's principles, deliberately broken. Visibility is hidden. Feedback is misleading. Consistency is violated on purpose.' This plants the ethics seed without making it heavy. We'll come back to this in Session 6.",
+          id: "Kenalkan dark patterns secara singkat — tunjukkan 3–4 contoh nyata: confirmshaming ('Tidak, aku tidak mau hemat uang'), link unsubscribe yang tersembunyi, checkbox yang sudah tercentang sebelumnya. Frame: 'Dark pattern adalah prinsip Norman yang sengaja dilanggar. Visibility disembunyikan. Feedback menyesatkan. Consistency dilanggar dengan sengaja.' Ini menanam benih etika tanpa membuatnya berat. Kita akan kembali ke ini di Sesi 6."
+        },
+        why: { en: "Framing dark patterns as design principle violations makes ethics feel like a natural extension of quality, not a separate moral lecture.", id: "Framing dark pattern sebagai pelanggaran prinsip desain membuat etika terasa seperti perpanjangan alami dari kualitas, bukan ceramah moral yang terpisah." },
+        prompts: { en: ["Pernah kena dark pattern? Share satu contoh.", "Is there a grey area between 'persuasive design' and 'dark pattern'? Where's the line?"], id: ["Pernah kena dark pattern? Share satu contoh.", "Apakah ada area abu-abu antara 'desain persuasif' dan 'dark pattern'? Di mana batasnya?"] }
+      },
+      {
+        time: "95–100", badge: "closing", tag: { en: "Wrap-up", id: "Penutup" },
+        title: { en: "Assignment Brief", id: "Pengantar Tugas" },
+        body: { en: "Clarify the assignment. Good tip: 'The annotations are the most important part — the diagram is just the context for your thinking.'", id: "Klarifikasi tugas. Tip bagus: 'Anotasinya adalah bagian terpenting — diagramnya hanya konteks untuk pemikiranmu.'" },
+        why: { en: "", id: "" }, prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "User Flow + IA Diagram Rubric", id: "Rubrik Diagram User Flow + AI" },
+      rows: [
+        { criterion: { en: "Flow accuracy", id: "Akurasi alur" }, desc: { en: "User flow clearly represents a realistic task path", id: "User flow jelas merepresentasikan jalur tugas yang realistis" }, points: "30%" },
+        { criterion: { en: "Norman annotations", id: "Anotasi Norman" }, desc: { en: "At least 2 Norman principles identified per screen — one followed, one violated", id: "Minimal 2 prinsip Norman teridentifikasi per layar — satu yang diikuti, satu yang dilanggar" }, points: "40%" },
+        { criterion: { en: "IA quality", id: "Kualitas IA" }, desc: { en: "Sitemap is logical, labelled clearly, and reflects mental model thinking", id: "Sitemap logis, diberi label jelas, dan mencerminkan pemikiran model mental" }, points: "30%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "This session is all about Norman — Don Norman, whose book The Design of Everyday Things literally changed how designers think about interfaces. We'll go through his 6 design principles one by one, do a live audit of a real website together, and look at how these principles also apply to Information Architecture (how content is organised). We'll also see what happens when designers break these principles on purpose.",
+      id: "Sesi ini sepenuhnya tentang Norman — Don Norman, yang bukunya The Design of Everyday Things secara harfiah mengubah cara desainer berpikir tentang antarmuka. Kita akan membahas 6 prinsip desainnya satu per satu, melakukan audit langsung pada website nyata bersama-sama, dan melihat bagaimana prinsip-prinsip ini juga berlaku untuk Arsitektur Informasi (bagaimana konten diorganisir). Kita juga akan melihat apa yang terjadi ketika desainer sengaja melanggar prinsip-prinsip ini."
+    },
+    whatWeDo: {
+      en: ["Deep dive into Norman's 6 principles: Visibility, Feedback, Constraints, Mapping, Consistency, Affordances & Signifiers", "Live interface audit on a real website", "Sketch a basic sitemap and user flow", "Intro to dark patterns and design ethics"],
+      id: ["Pendalaman 6 prinsip Norman: Visibility, Feedback, Constraints, Mapping, Consistency, Affordances & Signifiers", "Audit antarmuka langsung pada website nyata", "Sketsa sitemap dan user flow dasar", "Pengantar dark pattern dan etika desain"]
+    },
+    assignment: {
+      title: { en: "User Flow + IA Diagram with Norman's Audit Notes", id: "Diagram User Flow + AI dengan Catatan Audit Norman" },
+      desc: {
+        en: "Choose any app. Map the user flow for one core task (e.g., making a purchase, booking a service). Build a simple sitemap showing the app's structure. Then annotate: for each main screen in the flow, identify at least 2 Norman principles — one that is followed well, and one that is violated. Submit as a PDF, image, or Figma/Miro share link.",
+        id: "Pilih aplikasi apapun. Petakan user flow untuk satu tugas inti (mis. melakukan pembelian, memesan layanan). Bangun sitemap sederhana yang menunjukkan struktur aplikasi. Kemudian anotasi: untuk setiap layar utama dalam alur, identifikasi minimal 2 prinsip Norman — satu yang diikuti dengan baik, dan satu yang dilanggar. Submit sebagai PDF, gambar, atau link berbagi Figma/Miro."
+      },
+      due: { en: "Before Session 5 · May 5", id: "Sebelum Sesi 5 · 5 Mei" }
+    },
+    refs: {
+      books: [
+        { authors: "Norman (2013)", chapter: "Chapters 1–4", topic: { en: "The core of Norman's framework", id: "Inti dari framework Norman" } },
+        { authors: "Rogers, Sharp & Preece (2023)", chapter: "Chapter 2", topic: { en: "Understanding and Conceptualizing Interaction", id: "Memahami dan Mengkonseptualisasikan Interaksi" } },
+        { authors: "Shneiderman et al. (2016)", chapter: "Chapter 2", topic: { en: "Organizing the Display", id: "Mengorganisir Tampilan" } },
+      ],
+      online: [
+        { title: "Dark Patterns — Hall of Shame", url: "https://www.deceptive.design", source: "deceptive.design — real examples from major products" },
+        { title: "Norman's Design Principles Explained", url: "https://www.interaction-design.org/literature/topics/affordances", source: "Interaction Design Foundation" },
+      ]
+    }
+  }
+},
+{
+  no: 5, icon: "◆",
+  date: { en: "May 5, 2026", id: "5 Mei 2026" },
+  color: "#2A8A3E", light: "#EAF6EC", border: "#A8D8B0",
+  title: { en: "Wireframing & Prototyping", id: "Wireframing & Prototyping" },
+  subtitle: { en: "From sketch to something you can actually click.", id: "Dari sketsa menjadi sesuatu yang bisa diklik." },
+  instructor: {
+    prep: {
+      en: "IMPORTANT: Send a reminder 2–3 days before class for students to set up their Figma or Penpot accounts — don't lose 15 minutes of class time on account creation. Prepare a simple wireframe starter template (3 blank screens in Figma/Penpot). Have examples of the lo-fi → hi-fi progression for the same screen. Brief yourself on WCAG minimum touch targets (44px) and contrast ratios (4.5:1 for normal text).",
+      id: "PENTING: Kirim pengingat 2–3 hari sebelum kelas agar mahasiswa menyiapkan akun Figma atau Penpot — jangan buang 15 menit waktu kelas untuk pembuatan akun. Siapkan template starter wireframe sederhana (3 layar kosong di Figma/Penpot). Siapin contoh progres lo-fi → hi-fi untuk layar yang sama. Refresh diri tentang ukuran sentuh minimum WCAG (44px) dan rasio kontras (4.5:1 untuk teks normal)."
+    },
+    blocks: [
+      {
+        time: "0–10", badge: "warmup", tag: { en: "Warm-up", id: "Pemanasan" },
+        title: { en: "Paper Sketch → Lo-fi → Hi-fi", id: "Sketsa Kertas → Lo-fi → Hi-fi" },
+        body: {
+          en: "Show a side-by-side comparison of the same screen in three states: a rough paper sketch, a lo-fi wireframe (greyscale, no branding), and a hi-fi prototype (colours, typography, interactions). Ask: 'At which stage would you want to receive feedback?' Let them discuss. Then reveal the design principle: earlier feedback is cheaper. A lo-fi prototype takes 20 minutes to change; a hi-fi one takes 2 days.",
+          id: "Tunjukkan perbandingan berdampingan dari layar yang sama dalam tiga keadaan: sketsa kertas kasar, wireframe lo-fi (greyscale, tanpa branding), dan prototipe hi-fi (warna, tipografi, interaksi). Tanya: 'Pada tahap mana kamu ingin menerima umpan balik?' Biarkan mereka berdiskusi. Lalu ungkapkan prinsip desain: umpan balik lebih awal lebih murah. Prototipe lo-fi butuh 20 menit untuk diubah; yang hi-fi butuh 2 hari."
+        },
+        why: { en: "Starting with the fidelity spectrum helps students understand why they're sketching first instead of jumping into Figma — it's a deliberate strategy, not a limitation.", id: "Mulai dengan spektrum fidelitas membantu mahasiswa memahami mengapa mereka sketsa dulu sebelum langsung ke Figma — ini strategi yang disengaja, bukan keterbatasan." },
+        prompts: { en: ["Why might a team skip lo-fi and go straight to hi-fi? What's the risk?", "What kind of feedback can you NOT get from a lo-fi prototype?"], id: ["Kenapa sebuah tim mungkin melewati lo-fi dan langsung ke hi-fi? Apa risikonya?", "Jenis umpan balik apa yang TIDAK bisa kamu dapatkan dari prototipe lo-fi?"] }
+      },
+      {
+        time: "10–30", badge: "core", tag: { en: "Tools", id: "Alat" },
+        title: { en: "Wireframing Tools Overview", id: "Gambaran Alat Wireframing" },
+        body: {
+          en: "Quick tour: Figma (most widely used, free tier available, cloud-based), Penpot (open-source alternative, very similar to Figma, fully free), Balsamiq (lo-fi specialist, great for quick sketching). Design systems basics: grids, 8px spacing systems, component libraries. Show how a consistent grid makes layouts feel intentional even at lo-fi stage.\n\nIf students are new to Figma/Penpot, spend 5 minutes on the absolute basics: frames, shapes, text, grouping.",
+          id: "Tur singkat: Figma (paling banyak digunakan, tersedia free tier, berbasis cloud), Penpot (alternatif open-source, sangat mirip Figma, sepenuhnya gratis), Balsamiq (spesialis lo-fi, bagus untuk sketsa cepat). Dasar-dasar design system: grid, sistem spasi 8px, component library. Tunjukkan bagaimana grid yang konsisten membuat tata letak terasa disengaja bahkan di tahap lo-fi.\n\nJika mahasiswa baru mengenal Figma/Penpot, habiskan 5 menit untuk dasar-dasar mutlak: frame, shape, teks, pengelompokan."
+        },
+        why: { en: "Showing free alternatives alongside Figma early removes the financial barrier and signals that the skill is tool-agnostic — the thinking matters more than the tool.", id: "Menampilkan alternatif gratis bersama Figma sejak awal menghilangkan hambatan finansial dan memberi sinyal bahwa keterampilan ini tidak bergantung pada alat — cara berpikirnya lebih penting dari alatnya." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "30–65", badge: "activity", tag: { en: "Workshop", id: "Workshop" },
+        title: { en: "Wireframe Sketching Workshop", id: "Workshop Sketsa Wireframe" },
+        body: {
+          en: "Students wireframe 3 screens for a product of their choice (they can build on their user flow from Session 4). Start on paper or in a lo-fi tool first — boxes, lines, no colour. The rule: if you can't explain why each element is there, it shouldn't be there.\n\nAfter 25 minutes of sketching: pick the best screen and make it clickable. Add interactive links between screens. 10 minutes. The goal isn't a polished prototype — it's a prototype that communicates the flow.",
+          id: "Mahasiswa wireframe 3 layar untuk produk pilihan mereka (bisa melanjutkan user flow dari Sesi 4). Mulai di kertas atau alat lo-fi dulu — kotak, garis, tanpa warna. Aturannya: kalau kamu tidak bisa menjelaskan kenapa setiap elemen ada di sana, elemen itu tidak perlu ada.\n\nSetelah 25 menit sketsa: pilih layar terbaik dan jadikan bisa diklik. Tambahkan tautan interaktif antar layar. 10 menit. Tujuannya bukan prototipe yang sempurna — tapi prototipe yang mengkomunikasikan alurnya."
+        },
+        why: { en: "Starting on paper (even digitally) before going hi-fi builds the habit of thinking before styling — one of the most important professional habits a designer can develop.", id: "Mulai di kertas (bahkan secara digital) sebelum ke hi-fi membangun kebiasaan berpikir sebelum menata gaya — salah satu kebiasaan profesional terpenting yang bisa dikembangkan seorang desainer." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "65–80", badge: "activity", tag: { en: "Peer Feedback", id: "Umpan Balik Rekan" },
+        title: { en: "Structured Peer Feedback", id: "Umpan Balik Rekan Terstruktur" },
+        body: {
+          en: "Pairs exchange prototypes. Feedback format — give students this exact structure:\n• 'One thing that is clear: ...'\n• 'One thing that confused me: ...'\n• 'One suggestion: ...'\n\n10 minutes per person. This structure prevents both empty praise ('it's great!') and unconstructive criticism ('I don't like it'). It's also a professional feedback model they'll use in their careers.",
+          id: "Pasangan bertukar prototipe. Format umpan balik — berikan struktur persis ini kepada mahasiswa:\n• 'Satu hal yang jelas: ...'\n• 'Satu hal yang membingungkanku: ...'\n• 'Satu saran: ...'\n\n10 menit per orang. Struktur ini mencegah pujian kosong ('bagus!') dan kritik yang tidak konstruktif ('aku tidak suka'). Ini juga model umpan balik profesional yang akan mereka gunakan dalam karir."
+        },
+        why: { en: "Structured feedback teaches both giving and receiving critique — a skill many students have never practiced formally. The format makes it safe to be honest.", id: "Umpan balik terstruktur mengajarkan cara memberi dan menerima kritik — keterampilan yang belum pernah dipraktikkan secara formal oleh banyak mahasiswa. Formatnya membuat jujur terasa aman." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "80–95", badge: "core", tag: { en: "Accessibility by Design", id: "Aksesibilitas sejak Awal" },
+        title: { en: "WCAG Basics at the Wireframe Stage", id: "Dasar WCAG di Tahap Wireframe" },
+        body: {
+          en: "Three things students can check at wireframe stage:\n1. Touch target size — minimum 44×44px for interactive elements. Show what too-small targets look like.\n2. Colour contrast — minimum 4.5:1 ratio for body text. Even in greyscale wireframes, you can plan for this.\n3. Text hierarchy — never rely on colour alone to communicate meaning. If colour was removed, would the hierarchy still be clear?\n\nKey message: 'Accessibility isn't a post-production checklist — it's a design decision you make from the first sketch.'",
+          id: "Tiga hal yang bisa mahasiswa cek di tahap wireframe:\n1. Ukuran target sentuh — minimum 44×44px untuk elemen interaktif. Tunjukkan seperti apa target yang terlalu kecil.\n2. Kontras warna — rasio minimum 4.5:1 untuk teks isi. Bahkan dalam wireframe greyscale, kamu bisa merencanakan ini.\n3. Hierarki teks — jangan pernah hanya mengandalkan warna untuk mengkomunikasikan makna. Kalau warna dihapus, apakah hierarkinya masih jelas?\n\nPesan kunci: 'Aksesibilitas bukan checklist pasca-produksi — ini keputusan desain yang dibuat sejak sketsa pertama.'"
+        },
+        why: { en: "Introducing WCAG at the wireframe stage (rather than as a separate 'accessibility session') shows students it's an integrated design practice, not a compliance afterthought.", id: "Memperkenalkan WCAG di tahap wireframe (bukan sebagai 'sesi aksesibilitas' terpisah) menunjukkan kepada mahasiswa bahwa ini adalah praktik desain terintegrasi, bukan pemikiran kepatuhan setelahnya." },
+        prompts: { en: ["What other aspects of accessibility could you plan for at wireframe stage?", "Why do you think accessibility is often left until the end of a project?"], id: ["Aspek aksesibilitas lain apa yang bisa kamu rencanakan di tahap wireframe?", "Kenapa menurutmu aksesibilitas sering ditinggalkan hingga akhir proyek?"] }
+      },
+      {
+        time: "95–100", badge: "closing", tag: { en: "Wrap-up", id: "Penutup" },
+        title: { en: "Assignment Brief", id: "Pengantar Tugas" },
+        body: { en: "Key tip: 'Submit a share link, not a screenshot. We need to click through it.' Also remind: the prototype doesn't need to be hi-fi — a working lo-fi prototype is more valuable than a beautiful static mockup.", id: "Tip kunci: 'Submit link berbagi, bukan screenshot. Kita perlu mengklik melaluinya.' Juga ingatkan: prototipe tidak perlu hi-fi — prototipe lo-fi yang berfungsi lebih berharga dari mockup statis yang indah." },
+        why: { en: "", id: "" }, prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "Prototype Rubric", id: "Rubrik Prototipe" },
+      rows: [
+        { criterion: { en: "Clickability", id: "Bisa diklik" }, desc: { en: "At least 3 connected screens with working links", id: "Minimal 3 layar terhubung dengan tautan yang berfungsi" }, points: "25%" },
+        { criterion: { en: "Task clarity", id: "Kejelasan tugas" }, desc: { en: "The user task is clear and the flow supports it logically", id: "Tugas pengguna jelas dan alurnya mendukungnya secara logis" }, points: "35%" },
+        { criterion: { en: "Accessibility note", id: "Catatan aksesibilitas" }, desc: { en: "One accessibility decision is documented and justified", id: "Satu keputusan aksesibilitas didokumentasikan dan dibenarkan" }, points: "20%" },
+        { criterion: { en: "Thoughtfulness", id: "Ketelitian" }, desc: { en: "Evidence of Norman's principles in the layout choices", id: "Bukti prinsip Norman dalam pilihan tata letak" }, points: "20%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "This is the hands-on session. We take everything we've learned — user needs, design principles, IA — and put it into something tangible that can actually be clicked. We'll go through the wireframing process from rough sketch to interactive prototype, give and receive structured feedback, and look at how accessibility principles apply right from the wireframe stage.",
+      id: "Ini adalah sesi hands-on. Kita ambil semua yang telah dipelajari — kebutuhan pengguna, prinsip desain, IA — dan wujudkan menjadi sesuatu yang nyata yang bisa diklik. Kita akan melalui proses wireframing dari sketsa kasar ke prototipe interaktif, memberi dan menerima umpan balik terstruktur, dan melihat bagaimana prinsip aksesibilitas diterapkan sejak tahap wireframe."
+    },
+    whatWeDo: {
+      en: ["Overview of wireframing tools: Figma, Penpot (free), Balsamiq", "Sketching workshop: 3 screens, low-fidelity first", "Make your wireframe clickable (interactive prototype)", "Structured peer feedback session", "WCAG accessibility basics at wireframe stage"],
+      id: ["Gambaran alat wireframing: Figma, Penpot (gratis), Balsamiq", "Workshop sketsa: 3 layar, lo-fidelity dulu", "Jadikan wireframe-mu bisa diklik (prototipe interaktif)", "Sesi umpan balik rekan terstruktur", "Dasar aksesibilitas WCAG di tahap wireframe"]
+    },
+    assignment: {
+      title: { en: "Clickable Prototype", id: "Prototipe yang Bisa Diklik" },
+      desc: {
+        en: "Build a clickable prototype of at least 3 connected screens for a product of your choice (you can build on your Session 4 user flow). Submit as a Figma/Penpot share link (not a screenshot — we need to click through it). Include a brief note on: (1) what user task does this prototype support, and (2) one accessibility decision you made and why.",
+        id: "Bangun prototipe yang bisa diklik dari minimal 3 layar terhubung untuk produk pilihanmu (bisa melanjutkan user flow dari Sesi 4). Submit sebagai link berbagi Figma/Penpot (bukan screenshot — kita perlu mengklik melaluinya). Sertakan catatan singkat tentang: (1) tugas pengguna apa yang didukung prototipe ini, dan (2) satu keputusan aksesibilitas yang kamu buat dan alasannya."
+      },
+      due: { en: "Before Session 6 · May 12", id: "Sebelum Sesi 6 · 12 Mei" }
+    },
+    refs: {
+      books: [
+        { authors: "Rogers, Sharp & Preece (2023)", chapter: "Chapters 11–12", topic: { en: "Prototyping in Design", id: "Prototyping dalam Desain" } },
+        { authors: "Hartson & Pyla (2018)", chapter: "Chapters 13–14", topic: { en: "Prototyping", id: "Prototyping" } },
+        { authors: "Krug (2014)", chapter: "Chapters 1–5", topic: { en: "Don't Make Me Think — core principles", id: "Don't Make Me Think — prinsip inti" } },
+      ],
+      online: [
+        { title: "Figma Getting Started", url: "https://help.figma.com/hc/en-us/articles/360038511533", source: "help.figma.com — official tutorials" },
+        { title: "Penpot Documentation", url: "https://help.penpot.app", source: "help.penpot.app — free, open-source alternative" },
+        { title: "WebAIM Contrast Checker", url: "https://webaim.org/resources/contrastchecker/", source: "webaim.org — free colour contrast tool" },
+      ]
+    }
+  }
+},
+{
+  no: 6, icon: "◐",
+  date: { en: "May 12, 2026", id: "12 Mei 2026" },
+  color: "#B5341E", light: "#FDEEE9", border: "#ECA898",
+  title: { en: "Usability Testing & Evaluation", id: "Pengujian Usabilitas & Evaluasi" },
+  subtitle: { en: "You think it works. Let's find out.", id: "Kamu pikir ini berhasil. Mari kita cari tahu." },
+  instructor: {
+    prep: {
+      en: "Prepare a simplified usability test script (5 tasks, max 2 sentences each). Print or share Nielsen's 10 heuristics as a reference card before class. Have a simple observation note template ready. Remind students to bring their prototypes from Session 5 — these will be tested today. Plan for the presentation teaser at the end: give students a heads-up on what's expected in Session 7.",
+      id: "Siapkan skrip tes usabilitas yang disederhanakan (5 tugas, maksimal 2 kalimat masing-masing). Cetak atau bagikan 10 heuristik Nielsen sebagai kartu referensi sebelum kelas. Siapin template catatan observasi sederhana. Ingatkan mahasiswa untuk membawa prototipe dari Sesi 5 — ini yang akan diuji hari ini. Rencanakan teaser presentasi di akhir: beri mahasiswa gambaran apa yang diharapkan di Sesi 7."
+    },
+    blocks: [
+      {
+        time: "0–10", badge: "warmup", tag: { en: "Warm-up", id: "Pemanasan" },
+        title: { en: "The Humbling Moment", id: "Momen yang Merendahkan Hati" },
+        body: {
+          en: "'From your prototypes last week — what do you think works really well? What are you unsure about?' 2–3 students share. Then: 'The only way to actually know is to watch someone else use it. Not a friend who's being polite — someone who will struggle with it openly.' Bridge to why usability testing exists.",
+          id: "'Dari prototipe kalian minggu lalu — apa yang menurut kalian berhasil dengan baik? Apa yang kalian tidak yakin?' 2–3 mahasiswa berbagi. Lalu: 'Satu-satunya cara untuk benar-benar tahu adalah dengan menonton orang lain menggunakannya. Bukan teman yang sedang bersikap sopan — seseorang yang akan berjuang dengan terbuka.' Bridge ke mengapa pengujian usabilitas ada."
+        },
+        why: { en: "Starting from their own prototypes creates immediate personal stake — they want to know if their work works.", id: "Mulai dari prototipe mereka sendiri menciptakan kepentingan pribadi yang langsung — mereka ingin tahu apakah pekerjaan mereka berhasil." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "10–35", badge: "core", tag: { en: "Core Concept", id: "Konsep Inti" },
+        title: { en: "How Usability Testing Works", id: "Bagaimana Pengujian Usabilitas Bekerja" },
+        body: {
+          en: "Cover: the think-aloud method (users narrate what they're doing and thinking while performing tasks), task design principles (observable, specific, not leading: 'Find and purchase a medium blue hoodie' not 'Find the hoodie you want to buy'), the facilitator's role (don't help, don't react, ask 'what are you thinking right now?' when silent), and note-taking strategy.\n\nKey Nielsen finding to share: 5 users find approximately 85% of usability problems. You don't need 100 participants.",
+          id: "Bahas: metode think-aloud (pengguna menceritakan apa yang mereka lakukan dan pikirkan saat melakukan tugas), prinsip desain tugas (bisa diamati, spesifik, tidak mengarahkan: 'Temukan dan beli hoodie biru medium' bukan 'Temukan hoodie yang ingin kamu beli'), peran fasilitator (jangan bantu, jangan bereaksi, tanya 'apa yang kamu pikirkan sekarang?' saat diam), dan strategi pencatatan.\n\nTemuan Nielsen kunci untuk dibagikan: 5 pengguna menemukan sekitar 85% masalah usabilitas. Kamu tidak butuh 100 peserta."
+        },
+        why: { en: "The '5 users' finding is motivating — it makes usability testing feel achievable, not like a massive research project.", id: "Temuan '5 pengguna' itu memotivasi — membuat pengujian usabilitas terasa bisa dicapai, bukan seperti proyek riset besar." },
+        prompts: {
+          en: ["What's hardest about watching someone struggle with your design without helping them?", "What's the difference between 'they don't understand' and 'I didn't explain it clearly enough'?"],
+          id: ["Apa yang paling susah dari menonton seseorang berjuang dengan desainmu tanpa membantunya?", "Apa bedanya 'mereka tidak mengerti' dan 'aku tidak menjelaskannya dengan cukup jelas'?"]
+        }
+      },
+      {
+        time: "35–60", badge: "activity", tag: { en: "Live Activity", id: "Aktivitas Langsung" },
+        title: { en: "Peer Usability Testing", id: "Pengujian Usabilitas Antar Rekan" },
+        body: {
+          en: "Students test each other's prototypes from Session 5. Tester thinks aloud while performing 2 assigned tasks. Observer takes notes using the template: step, what happened, what user said, what user did. 15 minutes each way. After: each student lists their top 3 usability issues found, rated by severity (1 = minor, 2 = moderate, 3 = critical).",
+          id: "Mahasiswa menguji prototipe satu sama lain dari Sesi 5. Penguji berpikir keras sambil melakukan 2 tugas yang ditentukan. Pengamat mengambil catatan menggunakan template: langkah, apa yang terjadi, apa yang dikatakan pengguna, apa yang dilakukan pengguna. 15 menit untuk masing-masing. Setelah itu: setiap mahasiswa mendaftar 3 masalah usabilitas teratas yang ditemukan, dinilai berdasarkan tingkat keparahan (1 = minor, 2 = sedang, 3 = kritis)."
+        },
+        why: { en: "Testing a peer's work (not your own) removes ego from the equation and creates a safe environment for honest feedback. The structured template ensures everyone records comparable data.", id: "Menguji pekerjaan rekan (bukan milikmu sendiri) menghilangkan ego dari persamaan dan menciptakan lingkungan yang aman untuk umpan balik yang jujur. Template terstruktur memastikan semua orang mencatat data yang sebanding." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "60–80", badge: "core", tag: { en: "Framework", id: "Kerangka" },
+        title: { en: "Heuristic Evaluation — Nielsen's 10 Principles", id: "Evaluasi Heuristik — 10 Prinsip Nielsen" },
+        body: {
+          en: "Walk through all 10 heuristics with one clear example each:\n1. Visibility of system status\n2. Match between system and real world\n3. User control and freedom (undo/redo)\n4. Consistency and standards\n5. Error prevention\n6. Recognition rather than recall\n7. Flexibility and efficiency of use\n8. Aesthetic and minimalist design\n9. Help users recognise, diagnose and recover from errors\n10. Help and documentation\n\nNote: these connect directly to Norman's principles from Session 4 — show the overlap. Students apply heuristics to one screen from their prototype: find 2 violations, propose a fix for each.",
+          id: "Bahas semua 10 heuristik dengan satu contoh jelas masing-masing:\n1. Visibility of system status\n2. Match between system and real world\n3. User control and freedom (undo/redo)\n4. Consistency and standards\n5. Error prevention\n6. Recognition rather than recall\n7. Flexibility and efficiency of use\n8. Aesthetic and minimalist design\n9. Help users recognise, diagnose and recover from errors\n10. Help and documentation\n\nCatatan: ini terhubung langsung ke prinsip Norman dari Sesi 4 — tunjukkan tumpang tindihnya. Mahasiswa menerapkan heuristik ke satu layar dari prototipe mereka: temukan 2 pelanggaran, usulkan perbaikan untuk masing-masing."
+        },
+        why: { en: "Connecting Nielsen's heuristics back to Norman's principles from Session 4 shows students that HCI isn't a collection of unrelated rules — it's a coherent framework built by people thinking about the same problem from different angles.", id: "Menghubungkan heuristik Nielsen kembali ke prinsip Norman dari Sesi 4 menunjukkan kepada mahasiswa bahwa HCI bukan kumpulan aturan yang tidak terkait — ini adalah kerangka yang koheren yang dibangun oleh orang-orang yang memikirkan masalah yang sama dari sudut yang berbeda." },
+        prompts: {
+          en: ["Which of the 10 heuristics do you think is hardest to evaluate? Why?", "Can a heuristic ever conflict with another heuristic?"],
+          id: ["Dari 10 heuristik ini, mana yang menurut kalian paling susah dievaluasi? Kenapa?", "Bisakah sebuah heuristik bertentangan dengan heuristik lain?"]
+        }
+      },
+      {
+        time: "80–95", badge: "core", tag: { en: "Metrics + Future", id: "Metrik + Masa Depan" },
+        title: { en: "Usability Metrics & Emerging Interfaces", id: "Metrik Usabilitas & Antarmuka Masa Depan" },
+        body: {
+          en: "Quick overview of usability metrics: task completion rate, time on task, error rate, satisfaction scores (SUS - System Usability Scale). How to report findings to a team that may resist criticism: frame as opportunities, not failures.\n\nBrief closing discussion on emerging interfaces: how does usability testing change for an AI chat interface? For a voice assistant? For an AR overlay? (There are no right answers — but thinking about this prepares students for how the field evolves.) Connect back to Session 1's teaser about the future of HCI.",
+          id: "Gambaran singkat metrik usabilitas: tingkat penyelesaian tugas, waktu untuk tugas, tingkat kesalahan, skor kepuasan (SUS - System Usability Scale). Cara melaporkan temuan ke tim yang mungkin menolak kritik: frame sebagai peluang, bukan kegagalan.\n\nDiskusi penutup singkat tentang antarmuka masa depan: bagaimana pengujian usabilitas berubah untuk antarmuka AI chat? Untuk voice assistant? Untuk AR overlay? (Tidak ada jawaban yang benar — tapi memikirkan hal ini mempersiapkan mahasiswa untuk bagaimana bidang ini berkembang.) Hubungkan kembali ke teaser Sesi 1 tentang masa depan HCI."
+        },
+        why: { en: "Closing the session by connecting back to Session 1 ('we said HCI was moving toward AI and AR — now you understand why evaluating those is genuinely complex') creates a satisfying arc and reinforces the course's coherence.", id: "Menutup sesi dengan menghubungkan kembali ke Sesi 1 ('kita bilang HCI bergerak menuju AI dan AR — sekarang kalian mengerti kenapa mengevaluasi itu benar-benar kompleks') menciptakan arc yang memuaskan dan memperkuat koherensi kursus." },
+        prompts: {
+          en: ["Kalau lo mau tes usabilitas sebuah AI chatbot, task apa yang bakal lo kasih ke user?", "What would 'error rate' mean for a voice interface?"],
+          id: ["Kalau lo mau tes usabilitas sebuah AI chatbot, task apa yang bakal lo kasih ke user?", "Apa arti 'tingkat kesalahan' untuk antarmuka suara?"]
+        }
+      },
+      {
+        time: "95–100", badge: "closing", tag: { en: "Wrap-up + Final Preview", id: "Penutup + Preview Final" },
+        title: { en: "Assignment Brief & Session 7 Preview", id: "Pengantar Tugas & Preview Sesi 7" },
+        body: { en: "Walk through the usability testing report assignment. Then: preview Session 7. 'In two weeks, you'll present your complete UX project. It should connect everything: your research, your design decisions, your testing findings. Start thinking about how these all tell one story.' Remind them of the social contract from Session 1 — you'll bring it back to close the course.", id: "Jelaskan tugas laporan pengujian usabilitas. Kemudian: preview Sesi 7. 'Dua minggu lagi, kalian akan mempresentasikan proyek UX lengkap kalian. Ini harus menghubungkan semuanya: riset kalian, keputusan desain kalian, temuan pengujian kalian. Mulai pikirkan bagaimana semua ini menceritakan satu cerita.' Ingatkan mereka tentang kontrak sosial dari Sesi 1 — kamu akan membawanya kembali untuk menutup kursus." },
+        why: { en: "", id: "" }, prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "Usability Testing Report Rubric", id: "Rubrik Laporan Pengujian Usabilitas" },
+      rows: [
+        { criterion: { en: "Test documentation", id: "Dokumentasi tes" }, desc: { en: "Tasks given, method used, and observations clearly recorded", id: "Tugas yang diberikan, metode yang digunakan, dan observasi tercatat dengan jelas" }, points: "30%" },
+        { criterion: { en: "Issue identification", id: "Identifikasi masalah" }, desc: { en: "3 issues documented with severity rating and evidence", id: "3 masalah terdokumentasi dengan penilaian keparahan dan bukti" }, points: "35%" },
+        { criterion: { en: "Heuristic analysis", id: "Analisis heuristik" }, desc: { en: "Heuristic violations correctly identified and applied", id: "Pelanggaran heuristik teridentifikasi dan diterapkan dengan benar" }, points: "20%" },
+        { criterion: { en: "Proposed fixes", id: "Perbaikan yang diusulkan" }, desc: { en: "2 specific, actionable fixes proposed", id: "2 perbaikan spesifik dan bisa ditindaklanjuti diusulkan" }, points: "15%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "The question this session answers: does your design actually work? You might think it does. Your users might have a different opinion. We'll learn how to run a usability test, apply Nielsen's 10 heuristics to evaluate an interface, and understand what the metrics actually mean. We'll also test each other's prototypes from last week — so bring yours.",
+      id: "Pertanyaan yang dijawab sesi ini: apakah desainmu benar-benar berhasil? Kamu mungkin berpikir iya. Pengguna kamu mungkin punya pendapat yang berbeda. Kita akan belajar cara menjalankan tes usabilitas, menerapkan 10 heuristik Nielsen untuk mengevaluasi antarmuka, dan memahami arti metrik yang sebenarnya. Kita juga akan menguji prototipe satu sama lain dari minggu lalu — jadi bawa prototipemu."
+    },
+    whatWeDo: {
+      en: ["Learn the think-aloud usability testing method", "Test each other's prototypes in pairs", "Apply Nielsen's 10 Usability Heuristics", "Review usability metrics: task completion, error rate, satisfaction", "Brief discussion: how does usability testing change for AI, voice, and AR interfaces?"],
+      id: ["Pelajari metode pengujian usabilitas think-aloud", "Uji prototipe satu sama lain berpasangan", "Terapkan 10 Heuristik Usabilitas Nielsen", "Tinjau metrik usabilitas: penyelesaian tugas, tingkat kesalahan, kepuasan", "Diskusi singkat: bagaimana pengujian usabilitas berubah untuk antarmuka AI, suara, dan AR?"]
+    },
+    assignment: {
+      title: { en: "Usability Testing Report", id: "Laporan Pengujian Usabilitas" },
+      desc: {
+        en: "Test your prototype with at least 1 real user (a friend or family member who hasn't seen it before). Document: the 2 tasks you gave them, your observations during the test, 3 usability issues found with severity rating (1–3), and 2 proposed fixes. Also include a brief heuristic evaluation: identify 2 Nielsen heuristic violations from your prototype and what you'd change.",
+        id: "Uji prototipemu dengan minimal 1 pengguna nyata (teman atau anggota keluarga yang belum pernah melihatnya). Dokumentasikan: 2 tugas yang kamu berikan, observasimu selama tes, 3 masalah usabilitas yang ditemukan dengan penilaian keparahan (1–3), dan 2 perbaikan yang diusulkan. Juga sertakan evaluasi heuristik singkat: identifikasi 2 pelanggaran heuristik Nielsen dari prototipemu dan apa yang akan kamu ubah."
+      },
+      due: { en: "Before Session 7 · May 19", id: "Sebelum Sesi 7 · 19 Mei" }
+    },
+    refs: {
+      books: [
+        { authors: "Lazar, Feng & Hochheiser (2021)", chapter: "Chapters 9–10", topic: { en: "Usability Evaluation", id: "Evaluasi Usabilitas" } },
+        { authors: "Hartson & Pyla (2018)", chapter: "Chapters 20–21", topic: { en: "Usability Testing", id: "Pengujian Usabilitas" } },
+        { authors: "Krug (2014)", chapter: "Chapters 6–9", topic: { en: "Usability Testing on a Shoestring", id: "Pengujian Usabilitas dengan Anggaran Terbatas" } },
+      ],
+      online: [
+        { title: "10 Usability Heuristics for User Interface Design", url: "https://www.nngroup.com/articles/ten-usability-heuristics/", source: "Nielsen Norman Group — free, essential reading" },
+        { title: "System Usability Scale (SUS)", url: "https://www.usability.gov/how-to-and-tools/methods/system-usability-scale.html", source: "usability.gov — free SUS template" },
+      ]
+    }
+  }
+},
+{
+  no: 7, icon: "★",
+  date: { en: "May 19, 2026", id: "19 Mei 2026" },
+  color: "#6B3FAF", light: "#F0EBFF", border: "#C9B8F0",
+  isExam: true,
+  title: { en: "Final Project Presentation", id: "Presentasi Proyek Akhir" },
+  subtitle: { en: "Show your work. Tell your story.", id: "Tunjukkan karyamu. Ceritakan kisahmu." },
+  instructor: {
+    prep: {
+      en: "Confirm the number of students/groups 1 week before — this determines timing. Rough guide: 8–10 students solo → 8 min each + 2 min feedback = ~100 min. 4–5 groups → 15–18 min each + 3 min feedback = ~100 min. Prepare a simple evaluation sheet. Plan to open and close by referencing the social contract from Session 1 — bring it full circle.",
+      id: "Konfirmasi jumlah mahasiswa/kelompok 1 minggu sebelumnya — ini menentukan timing. Panduan kasar: 8–10 mahasiswa solo → 8 menit masing-masing + 2 menit umpan balik = ~100 menit. 4–5 kelompok → 15–18 menit masing-masing + 3 menit umpan balik = ~100 menit. Siapkan lembar evaluasi sederhana. Rencanakan untuk membuka dan menutup dengan merujuk pada kontrak sosial dari Sesi 1 — bawa kembali ke lingkaran penuh."
+    },
+    blocks: [
+      {
+        time: "0–5", badge: "warmup", tag: { en: "Opening", id: "Pembuka" },
+        title: { en: "Bring Back the Social Contract", id: "Kembali ke Kontrak Sosial" },
+        body: {
+          en: "Open by showing the social contract screenshot from Session 1. Read out 2–3 commitments from the class. 'We said we'd do X. Let's see how it shows up in your presentations today.' This creates a satisfying full-circle moment and acknowledges the journey.",
+          id: "Buka dengan menampilkan screenshot kontrak sosial dari Sesi 1. Bacakan 2–3 komitmen dari kelas. 'Kita bilang akan melakukan X. Mari kita lihat bagaimana itu muncul dalam presentasi kalian hari ini.' Ini menciptakan momen lingkaran penuh yang memuaskan dan mengakui perjalanan yang telah dilalui."
+        },
+        why: { en: "Referencing the Session 1 social contract shows students you remembered what they said and took it seriously. It validates the journey and creates a sense of closure.", id: "Merujuk kontrak sosial Sesi 1 menunjukkan kepada mahasiswa bahwa kamu mengingat apa yang mereka katakan dan menganggapnya serius. Ini memvalidasi perjalanan dan menciptakan rasa selesai." },
+        prompts: { en: [], id: [] }
+      },
+      {
+        time: "5–90", badge: "exam", tag: { en: "Presentations", id: "Presentasi" },
+        title: { en: "Final Project Presentations", id: "Presentasi Proyek Akhir" },
+        body: {
+          en: "Each student/group presents their complete UX project. The presentation should tell a coherent story arc:\n1. Problem — who is the user, what challenge did you identify?\n2. Research — what did you learn from your research (persona, empathy map)?\n3. Design decisions — how did your research inform your wireframe? What Norman principles did you apply?\n4. Prototype — walk us through the clickable prototype.\n5. Testing findings — what did you discover? What would you change?\n\nPanel feedback after each: one specific strength, one specific question or suggestion. Keep feedback focused and time-boxed.",
+          id: "Setiap mahasiswa/kelompok mempresentasikan proyek UX lengkap mereka. Presentasi harus menceritakan arc cerita yang koheren:\n1. Masalah — siapa penggunanya, tantangan apa yang kamu identifikasi?\n2. Riset — apa yang kamu pelajari dari riset (persona, empathy map)?\n3. Keputusan desain — bagaimana risetmu menginformasikan wireframe-mu? Prinsip Norman apa yang kamu terapkan?\n4. Prototipe — ajak kita melihat prototipe yang bisa diklik.\n5. Temuan pengujian — apa yang kamu temukan? Apa yang akan kamu ubah?\n\nUmpan balik panel setelah masing-masing: satu kekuatan spesifik, satu pertanyaan atau saran spesifik. Jaga umpan balik tetap fokus dan terbatas waktu."
+        },
+        why: { en: "Structuring the presentation as a story arc (problem → research → design → test) mirrors how real UX case studies are presented in the industry — students are already practicing for job applications.", id: "Menyusun presentasi sebagai arc cerita (masalah → riset → desain → tes) mencerminkan bagaimana studi kasus UX nyata dipresentasikan di industri — mahasiswa sudah berlatih untuk lamaran pekerjaan." },
+        prompts: {
+          en: ["What was the biggest surprise you encountered during your research or testing?", "If you had one more week, what's the first thing you'd improve?", "What principle from this course will you carry into your next project?"],
+          id: ["Apa kejutan terbesar yang kamu temukan selama riset atau pengujian?", "Kalau kamu punya satu minggu lagi, apa yang pertama kali akan kamu perbaiki?", "Prinsip apa dari kursus ini yang akan kamu bawa ke proyek berikutnya?"]
+        }
+      },
+      {
+        time: "90–100", badge: "closing", tag: { en: "Course Close", id: "Penutup Kursus" },
+        title: { en: "Closing & Synthesis", id: "Penutup & Sintesis" },
+        body: {
+          en: "Close with a 5-minute synthesis of the course arc: 'We started by asking what makes a good interface. We ended by building and testing one. Everything in between — human cognition, Norman's principles, user research, wireframing, usability testing — was how you got from the question to the answer.'\n\nEnd with something honest and warm: this is a foundation, not a finish line. HCI is a field that keeps evolving — take the principles, not just the tools.",
+          id: "Tutup dengan sintesis 5 menit dari arc kursus: 'Kita mulai dengan bertanya apa yang membuat antarmuka yang baik. Kita akhiri dengan membangun dan mengujinya. Semua yang ada di antaranya — kognisi manusia, prinsip Norman, riset pengguna, wireframing, pengujian usabilitas — adalah bagaimana kalian bergerak dari pertanyaan ke jawaban.'\n\nAkhiri dengan sesuatu yang jujur dan hangat: ini adalah fondasi, bukan garis finish. HCI adalah bidang yang terus berkembang — bawa prinsipnya, bukan hanya alatnya."
+        },
+        why: { en: "Ending with a synthesis that connects back to Session 1's opening question creates a sense of completion and shows students how far they've come.", id: "Mengakhiri dengan sintesis yang kembali ke pertanyaan pembuka Sesi 1 menciptakan rasa selesai dan menunjukkan kepada mahasiswa seberapa jauh mereka telah datang." },
+        prompts: { en: [], id: [] }
+      }
+    ],
+    rubric: {
+      title: { en: "Final Presentation Rubric", id: "Rubrik Presentasi Akhir" },
+      rows: [
+        { criterion: { en: "Story coherence", id: "Koherensi cerita" }, desc: { en: "Presentation tells a clear arc: problem → research → design → test → findings", id: "Presentasi menceritakan arc yang jelas: masalah → riset → desain → tes → temuan" }, points: "25%" },
+        { criterion: { en: "Research quality", id: "Kualitas riset" }, desc: { en: "Persona and research findings are specific, not generic assumptions", id: "Persona dan temuan riset spesifik, bukan asumsi generik" }, points: "20%" },
+        { criterion: { en: "Design rationale", id: "Rasional desain" }, desc: { en: "Design decisions are explained using HCI concepts (Norman, IA, accessibility)", id: "Keputusan desain dijelaskan menggunakan konsep HCI (Norman, IA, aksesibilitas)" }, points: "25%" },
+        { criterion: { en: "Prototype quality", id: "Kualitas prototipe" }, desc: { en: "Clickable, task-oriented, and demonstrates the user journey", id: "Bisa diklik, berorientasi tugas, dan mendemonstrasikan perjalanan pengguna" }, points: "15%" },
+        { criterion: { en: "Testing & reflection", id: "Pengujian & refleksi" }, desc: { en: "Testing findings included and honestly reflected upon", id: "Temuan pengujian disertakan dan direfleksikan dengan jujur" }, points: "15%" },
+      ]
+    }
+  },
+  student: {
+    overview: {
+      en: "This is where everything comes together. You'll present your complete UX project — from the problem you identified, through your research and design decisions, to the prototype you built and tested. The goal isn't perfection. The goal is to tell a coherent story about how you think like a UX practitioner.",
+      id: "Di sinilah semuanya bersatu. Kamu akan mempresentasikan proyek UX lengkapmu — dari masalah yang kamu identifikasi, melalui riset dan keputusan desain, hingga prototipe yang kamu bangun dan uji. Tujuannya bukan kesempurnaan. Tujuannya adalah menceritakan kisah yang koheren tentang bagaimana kamu berpikir sebagai praktisi UX."
+    },
+    whatWeDo: {
+      en: ["Present your complete UX project (problem → research → design → prototype → testing)", "Give and receive panel feedback", "Course synthesis and closing"],
+      id: ["Presentasikan proyek UX lengkapmu (masalah → riset → desain → prototipe → pengujian)", "Beri dan terima umpan balik panel", "Sintesis kursus dan penutupan"]
+    },
+    assignment: {
+      title: { en: "Final UX Project + Presentation Deck", id: "Proyek UX Akhir + Deck Presentasi" },
+      desc: {
+        en: "Your final presentation should include all of the following, told as one coherent story:\n• Problem statement — who is your user, what challenge did you identify?\n• Research — persona and empathy map from your interviews\n• Design decisions — your user flow, IA, and how Norman's principles shaped your choices\n• Prototype — a clickable prototype (share link)\n• Testing findings — what you discovered, your heuristic evaluation, and what you'd change\n\nFormat: slides + live prototype demo. Time: 8–15 minutes depending on group size (your lecturer will confirm in advance).",
+        id: "Presentasi akhirmu harus mencakup semua hal berikut, diceritakan sebagai satu kisah yang koheren:\n• Pernyataan masalah — siapa penggunamu, tantangan apa yang kamu identifikasi?\n• Riset — persona dan empathy map dari wawancaramu\n• Keputusan desain — user flow, IA, dan bagaimana prinsip Norman membentuk pilihanmu\n• Prototipe — prototipe yang bisa diklik (link berbagi)\n• Temuan pengujian — apa yang kamu temukan, evaluasi heuristikmu, dan apa yang akan kamu ubah\n\nFormat: slide + demo prototipe langsung. Waktu: 8–15 menit tergantung ukuran kelompok (dosen akan konfirmasi sebelumnya)."
+      },
+      due: { en: "Session 7 · May 19, 2026", id: "Sesi 7 · 19 Mei 2026" }
+    },
+    refs: {
+      books: [],
+      online: [
+        { title: "How to Present a UX Case Study", url: "https://www.nngroup.com/articles/ux-portfolio-case-study/", source: "Nielsen Norman Group" },
+        { title: "UX Portfolio Tips and Examples", url: "https://www.interaction-design.org/literature/article/ux-portfolio", source: "Interaction Design Foundation" },
+      ]
+    }
+  }
+}
+];
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function applySessionColor(s) {
+  document.documentElement.style.setProperty('--session-color', s.color);
+  document.documentElement.style.setProperty('--session-light', s.light);
+  document.documentElement.style.setProperty('--session-border', s.border);
+}
+
+function renderTabs() {
+  const s = SESSIONS[CUR];
+  document.getElementById('session-tabs').innerHTML = SESSIONS.map((sess, i) => `
+    <button class="s-tab ${i === CUR ? 'active' : ''} ${sess.isExam ? 'exam' : ''}"
+            onclick="goTo(${i})">
+      S${sess.no}${sess.isExam ? ' ★' : ''}
+    </button>
+  `).join('');
+}
+
+function renderHeader() {
+  const s = SESSIONS[CUR];
+  document.getElementById('s-meta').textContent = `${t({en:'SESSION',id:'SESI'})} ${s.no} ${t({en:'OF',id:'DARI'})} 7 · 100 MIN`;
+  document.getElementById('s-meta').style.color = s.color;
+  document.getElementById('s-title').textContent = t(s.title);
+  document.getElementById('s-subtitle').textContent = t(s.subtitle);
+  document.getElementById('s-date').textContent = t(s.date);
+  document.getElementById('s-icon').textContent = s.icon;
+  document.getElementById('s-icon').style.color = s.color;
+  const hdr = document.getElementById('session-header');
+  hdr.style.background = s.light;
+  hdr.style.borderColor = s.border;
+  document.getElementById('topbar-view-label').textContent =
+    VIEW === 'instructor' ? t({en:'Instructor Guide',id:'Panduan Instruktur'}) : t({en:'Student Guide',id:'Panduan Mahasiswa'});
+}
+
+function renderInstructor() {
+  const s = SESSIONS[CUR];
+  const d = s.instructor;
+  let html = '';
+
+  // Prep card
+  html += `<div class="section-label">${t({en:'PREPARATION',id:'PERSIAPAN'})}</div>`;
+  html += `<div class="prep-card">
+    <div class="prep-card-label">📋 ${t({en:'Before Class',id:'Sebelum Kelas'})}</div>
+    <p>${t(d.prep).replace(/\n/g,'<br>')}</p>
+  </div>`;
+
+  // Timing blocks
+  html += `<div class="section-label">${t({en:'SESSION PLAN · CLICK TO EXPAND',id:'RENCANA SESI · KLIK UNTUK MEMBUKA'})}</div>`;
+  html += `<div class="block-wrap">`;
+  d.blocks.forEach((b, i) => {
+    const key = `${CUR}-${i}`;
+    const isOpen = !!openBlocks[key];
+    const prompts = Array.isArray(b.prompts) ? b.prompts : t(b.prompts) || [];
+    html += `
+    <div class="block ${isOpen ? 'open' : ''}" id="block-${key}">
+      <div class="block-head" onclick="toggleBlock('${key}')">
+        <span class="block-time">${b.time} min</span>
+        <span class="block-badge badge-${b.badge}">${b.badge.toUpperCase()}</span>
+        <div class="block-title-wrap">
+          <div class="block-title">${t(b.title)}</div>
+          <div class="block-tag" style="color:${s.color}">${t(b.tag)}</div>
+        </div>
+        <span class="block-chev ${isOpen ? 'open' : ''}">›</span>
+      </div>
+      <div class="block-body ${isOpen ? 'open' : ''}">
+        <p>${t(b.body).replace(/\n/g,'<br><br>')}</p>
+        ${b.why && t(b.why) ? `<div class="why-box" style="background:${s.light};border-left-color:${s.color}">
+          💡 <strong style="color:${s.color}">${t({en:'Why this works: ',id:'Kenapa ini efektif: '})}</strong>${t(b.why)}
+        </div>` : ''}
+        ${prompts.length ? `<div class="prompts-box">
+          <div class="prompts-label">💬 ${t({en:'Discussion Prompts',id:'Pertanyaan Diskusi'})}</div>
+          ${prompts.map(p => `<div class="prompt-item">${p}</div>`).join('')}
+        </div>` : ''}
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // Rubric
+  if (d.rubric) {
+    html += `<div class="section-label">${t({en:'ASSIGNMENT RUBRIC',id:'RUBRIK TUGAS'})}</div>`;
+    html += `<div class="rubric-card">
+      <div class="rubric-head" onclick="toggleRubric()">
+        <span class="rubric-head-title">📊 ${t(d.rubric.title)}</span>
+        <span class="block-chev ${openRubric ? 'open' : ''}">›</span>
+      </div>
+      <div class="rubric-body ${openRubric ? 'open' : ''}">
+        <table class="rubric-table">
+          <tr>
+            <th>${t({en:'Criterion',id:'Kriteria'})}</th>
+            <th>${t({en:'Description',id:'Deskripsi'})}</th>
+            <th>${t({en:'Weight',id:'Bobot'})}</th>
+          </tr>
+          ${d.rubric.rows.map(r => `<tr>
+            <td><strong>${t(r.criterion)}</strong></td>
+            <td>${t(r.desc)}</td>
+            <td style="text-align:center;color:${s.color};font-weight:600">${r.points}</td>
+          </tr>`).join('')}
+        </table>
+      </div>
+    </div>`;
+  }
+
+  return html;
+}
+
+function renderStudent() {
+  const s = SESSIONS[CUR];
+  const d = s.student;
+  let html = '';
+
+  // Overview
+  html += `<div class="section-label">${t({en:'OVERVIEW',id:'GAMBARAN UMUM'})}</div>`;
+  html += `<div class="student-overview"><p>${t(d.overview)}</p></div>`;
+
+  // What we do
+  html += `<div class="section-label">${t({en:"WHAT WE'LL DO",id:'YANG AKAN KITA LAKUKAN'})}</div>`;
+  const items = t(d.whatWeDo);
+  html += `<ul class="what-list">${items.map(w => `<li class="what-item">${w}</li>`).join('')}</ul>`;
+
+  // Assignment
+  html += `<div class="section-label">${t({en:'ASSIGNMENT',id:'TUGAS'})}</div>`;
+  html += `<div class="assignment-card ${openAssign ? 'open' : ''}">
+    <div class="assignment-head" onclick="toggleAssign()">
+      <div class="assignment-label-wrap">
+        <span class="assignment-badge" style="background:${s.color}">${t({en:'ASSIGNMENT',id:'TUGAS'})}</span>
+        <span class="assignment-title">${t(d.assignment.title)}</span>
+      </div>
+      <span class="block-chev ${openAssign ? 'open' : ''}">›</span>
+    </div>
+    <div class="assignment-body ${openAssign ? 'open' : ''}">
+      <p class="assignment-desc">${t(d.assignment.desc).replace(/\n/g,'<br><br>')}</p>
+      <div class="assignment-due">${t({en:'Due: ',id:'Tenggat: '})}${t(d.assignment.due)}</div>
+    </div>
+  </div>`;
+
+  // References
+  const hasBooks = d.refs.books && d.refs.books.length;
+  const hasOnline = d.refs.online && d.refs.online.length;
+  if (hasBooks || hasOnline) {
+    html += `<div class="section-label">${t({en:'REFERENCES',id:'REFERENSI'})}</div>`;
+    html += `<div class="refs-card">
+      <div class="refs-head" onclick="toggleRefs()">
+        <span class="refs-head-title">📚 ${t({en:'Readings & Resources',id:'Bacaan & Sumber Daya'})}</span>
+        <span class="block-chev ${openRefs ? 'open' : ''}">›</span>
+      </div>
+      <div class="refs-body ${openRefs ? 'open' : ''}">`;
+    if (hasBooks) {
+      html += `<div class="ref-section-label">📖 ${t({en:'Textbook Chapters',id:'Bab Buku Teks'})}</div>`;
+      html += d.refs.books.map(r => `
+        <div class="ref-item">
+          <span class="ref-item-icon">📖</span>
+          <div class="ref-item-text">
+            <div><strong>${r.authors}</strong> — ${t(r.topic)}</div>
+            <div class="ref-chapter">${r.chapter}</div>
+          </div>
+        </div>`).join('');
+    }
+    if (hasOnline) {
+      html += `<div class="ref-section-label">🔗 ${t({en:'Free Online Resources',id:'Sumber Daya Online Gratis'})}</div>`;
+      html += d.refs.online.map(r => `
+        <div class="ref-item">
+          <span class="ref-item-icon">🔗</span>
+          <div class="ref-item-text">
+            <div><a href="${r.url}" target="_blank" style="color:${s.color}">${r.title}</a></div>
+            <div class="ref-chapter">${r.source}</div>
+          </div>
+        </div>`).join('');
+    }
+    html += `</div></div>`;
+  }
+
+  return html;
+}
+
+function renderContent() {
+  const s = SESSIONS[CUR];
+  applySessionColor(s);
+  renderTabs();
+  renderHeader();
+
+  let inner = '';
+  if (s.isExam) {
+    inner += `<div class="exam-banner">
+      <h3>★ ${t({en:'Final Exam Session',id:'Sesi Ujian Akhir'})}</h3>
+      <p>${t({en:'Presentations — no new material delivered today',id:'Presentasi — tidak ada materi baru hari ini'})}</p>
+    </div>`;
+  }
+
+  if (VIEW === 'instructor') {
+    inner += renderInstructor();
+  } else {
+    inner += renderStudent();
+  }
+
+  // Nav
+  inner += `<div id="session-nav">
+    <button class="nav-btn" id="btn-prev" onclick="changeSession(-1)" ${CUR===0?'disabled':''}>← ${t({en:'Previous',id:'Sebelumnya'})}</button>
+    <button class="nav-btn" id="btn-next" onclick="changeSession(1)" ${CUR===SESSIONS.length-1?'disabled':''} style="background:${s.color};border-color:${s.color}">${t({en:'Next',id:'Berikutnya'})} →</button>
+  </div>`;
+
+  document.getElementById('session-content').innerHTML = inner;
+}
+
+// ── TOGGLES ───────────────────────────────────────────────────────────────────
+function toggleBlock(key) {
+  openBlocks[key] = !openBlocks[key];
+  renderContent();
+}
+function toggleAssign() {
+  openAssign = !openAssign;
+  renderContent();
+}
+function toggleRubric() {
+  openRubric = !openRubric;
+  renderContent();
+}
+function toggleRefs() {
+  openRefs = !openRefs;
+  renderContent();
+}
+
+function goTo(i) {
+  CUR = i;
+  openBlocks = {};
+  openAssign = false;
+  openRubric = false;
+  openRefs = false;
+  renderContent();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function changeSession(dir) {
+  const n = CUR + dir;
+  if (n < 0 || n >= SESSIONS.length) return;
+  goTo(n);
+}
+
+// setView removed — student-only version
+
+function setLang(l) {
+  LANG = l;
+  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  document.getElementById('btn-id').classList.toggle('active', l === 'id');
+  renderContent();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderContent();
+</script>
+
+
+
+</body>
+</html>
